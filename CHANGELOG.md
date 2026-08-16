@@ -18,6 +18,26 @@ Remaining crosswalks: NIST AI RMF, ISO/IEC 42001, EU AI Act.
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
 
+## [0.11.4] — 2026-08-16
+
+Three filter defects, found by testing the built page in a **real DOM with real
+dispatched events** rather than against a hand-rolled stub. The stub could not
+have found any of them.
+
+- **Selecting an archetype looked like nothing happened.** The 32 inherited core
+  obligations were rendered *first*, so the top of the list never changed and
+  the shape's own obligations sat below the fold. The archetype's own block now
+  leads and the inherited core follows: `A6 → CORE`, not `CORE → A6`.
+- **Checkboxes listened for `input` only.** Browsers emit both `input` and
+  `change` for a checkbox, and relying on one is a coin flip. Both are now bound.
+- **"108 shown" beside 109 rendered rows read as a bug.** `AAC-0105` is owed by
+  both A6 and A7 and correctly appears under both headings, so the label now
+  says what it counts: `108 obligations · 109 rows`.
+
+`jsdom` is now a dev dependency. The lesson from 0.11.3 stands and generalises:
+a harness that cannot reproduce the browser will confirm whatever you already
+believe.
+
 ## [0.11.3] — 2026-08-16
 
 **Fixes an empty catalog list.** The page rendered its headings, filter bar and
@@ -588,7 +608,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.3...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.4...HEAD
+[0.11.4]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.3...v0.11.4
 [0.11.3]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.2...v0.11.3
 [0.11.2]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.0...v0.11.1

@@ -1,6 +1,6 @@
 {
   "name": "ai-assurance-catalog",
-  "version": "0.11.3",
+  "version": "0.11.4",
   "description": "Test obligations for AI applications, by architecture archetype. A catalog, not a framework.",
   "license": "Apache-2.0",
   "private": true,
@@ -21,5 +21,8 @@
     "ajv-formats": "^3.0.1",
     "fast-xml-parser": "^4.5.0",
     "js-yaml": "^4.1.0"
+  },
+  "devDependencies": {
+    "jsdom": "^29.1.1"
   }
 }

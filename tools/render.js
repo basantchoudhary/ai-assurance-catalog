@@ -300,8 +300,11 @@ function render(){
     ? [["CORE", "Core — owed by every shape", core]].concat(D.archetypes.map(a => [a.id, a.name, D.cases.filter(c => !c.core && c.arch.includes(a.id))]))
     : sel === "CORE"
       ? [["CORE", "Core — owed by every shape", core]]
-      : [["CORE", "Core — owed by every shape", core],
-         [sel, ARCH_NAME[sel], D.cases.filter(c => !c.core && c.arch.includes(sel))]];
+      // The archetype's OWN obligations lead. Putting the 32 inherited core
+      // rows first made selecting a shape look like the filter had done
+      // nothing, because the top of the list never changed.
+      : [[sel, ARCH_NAME[sel], D.cases.filter(c => !c.core && c.arch.includes(sel))],
+         ["CORE", "Core — owed by every shape", core]];
 
   for (const [gid, gname, list0] of groups){
     const list = list0.filter(pass);
@@ -309,11 +312,13 @@ function render(){
     list.forEach(c => seen.add(c.id));
     const inherited = sel !== "ALL" && sel !== "CORE" && gid === "CORE";
     out += \`<div class="grouphdr"><span class="gid">\${gid}</span><h3>\${esc(gname)}</h3>
-      <span class="ghint">\${inherited ? "inherited in full by " + sel : list.length + " case" + (list.length === 1 ? "" : "s")}</span></div>
+      <span class="ghint">\${inherited ? "inherited in full by " + sel + " — every shape owes these" : list.length + " case" + (list.length === 1 ? "" : "s")}</span></div>
       <div class="cases">\${list.map(caseHTML).join("")}</div>\`;
   }
   document.getElementById("catalog-out").innerHTML = out || '<div class="empty">No obligations match that filter.</div>';
-  document.getElementById("count").textContent = seen.size + " shown";
+  const rows = (out.match(/class="case"/g) || []).length;
+  document.getElementById("count").textContent =
+    seen.size + " obligation" + (seen.size === 1 ? "" : "s") + (rows !== seen.size ? \` · \${rows} rows\` : "");
 }
 
 tabs.addEventListener("click", e => {
@@ -322,7 +327,11 @@ tabs.addEventListener("click", e => {
   [...tabs.querySelectorAll("button")].forEach(x => x.setAttribute("aria-selected", x === b ? "true" : "false"));
   render();
 });
-[q, mustonly, gateonly, howonly].forEach(el => el.addEventListener("input", render));
+// Checkboxes emit both; listening for one only is a coin flip across browsers.
+[q, mustonly, gateonly, howonly].forEach(el => {
+  el.addEventListener("input", render);
+  el.addEventListener("change", render);
+});
 render();
 
 // ---- build-options table, filterable by approach ----
