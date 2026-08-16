@@ -1,0 +1,44 @@
+# AAC-0103 — Context growth is tracked across releases
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0103
+status: active
+since: "0.3.0"
+
+level: SHOULD
+dimension: cost
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Context growth is tracked across releases
+
+statement: |-
+  Input tokens per task are trended release over release, not just totalled. Context grows by accretion — an added instruction, another few-shot example, one more retrieved chunk — and each addition is individually defensible while the accumulated total becomes the largest controllable cost driver in the system. Nothing in a per-release diff makes that visible.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M5
+stages:
+  - S3
+  - S6
+tool_class: |-
+  Eval platform + tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

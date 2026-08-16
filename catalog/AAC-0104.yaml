@@ -1,0 +1,43 @@
+# AAC-0104 — Spend is attributable to tenant, feature and route
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0104
+status: active
+since: "0.3.0"
+
+level: SHOULD
+dimension: cost
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Spend is attributable to tenant, feature and route
+
+statement: |-
+  Every unit of spend carries the dimensions needed to answer who incurred it, for which feature, on which route. Without attribution a rising bill is observable but not diagnosable, unit economics cannot be computed at all, and the first question asked after a cost incident has no answer in the data already collected.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+  - M2
+stages:
+  - S5
+tool_class: |-
+  Tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.2.0** — identifiers are stable from the first tagged
+Status: **working draft 0.3.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -25,7 +25,7 @@ thing nobody publishes. This is that catalog.
 
 ## What it is
 
-101 obligations. Each one states, in plain English, something that must be true
+105 obligations. Each one states, in plain English, something that must be true
 of a system — tagged with which architecture archetypes owe it, which classes of
 machinery can produce a verdict, at which lifecycle stage, and whether failure
 blocks.
@@ -46,9 +46,9 @@ stages: [S2, S4]          # CI pre-merge, runtime gateway
 tool_class: Test runner + gateway
 ```
 
-Twenty-seven of the 101 are **core** — owed by every AI application regardless of
+Thirty of the 105 are **core** — owed by every AI application regardless of
 shape. The rest are archetype deltas: what is *new* about that shape's risk
-surface. That is why this is 101 cases and not several hundred.
+surface. That is why this is 105 cases and not several hundred.
 
 ## What it is not
 
@@ -86,7 +86,7 @@ deprecation rules.
 ## Layout
 
 ```
-catalog/        101 cases, one YAML file each — the normative master
+catalog/        105 cases, one YAML file each — the normative master
 taxonomy/       archetypes, mechanisms, stages, dimensions, levels
 schema/         JSON Schema for a case
 crosswalks/     mappings to OWASP, NIST AI RMF, ISO 42001, EU AI Act

@@ -1,0 +1,42 @@
+# AAC-0102 — Cost regression is gated at release
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0102
+status: active
+since: "0.3.0"
+
+level: MUST
+dimension: cost
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Cost regression is gated at release
+
+statement: |-
+  Cost per successful task for the release candidate is compared against the incumbent on the same frozen set, and a material increase blocks promotion on the same footing as a quality regression. Quality is routinely gated while cost is merely reported, so a change that buys a small quality gain for a large spend increase ships unopposed and is discovered on the invoice.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

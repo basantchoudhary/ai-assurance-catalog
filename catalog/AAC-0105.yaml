@@ -1,0 +1,36 @@
+# AAC-0105 — Tool results are bounded before they enter context
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0105
+status: active
+since: "0.3.0"
+
+level: SHOULD
+dimension: cost
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A6
+  - A7
+core: false
+
+title: |-
+  Tool results are bounded before they enter context
+
+statement: |-
+  Large tool outputs are truncated, summarised or paginated under a tested policy before being added to the context window. An agent that pastes a full result set into context pays for it again on every remaining iteration of the loop, so the cost compounds with trajectory length rather than being incurred once — which is why it looks small in a single-call trace and dominates the bill in aggregate.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M5
+stages:
+  - S2
+  - S3
+tool_class: |-
+  Test runner + tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

@@ -12,6 +12,47 @@ ship. A quarter with no changes ships a release note saying so.
 Phase 1: crosswalks to OWASP LLM Top 10, NIST AI RMF, ISO/IEC 42001 and the
 EU AI Act.
 
+Under consideration: an informative `patterns/` catalog of known anti-patterns
+mapping into the obligations that catch them. Anti-patterns are diagnoses, not
+obligations, so they would be crosswalk-shaped and non-normative rather than
+cases. See the note in [docs/NON-GOALS.md](docs/NON-GOALS.md) about authoring
+taxonomies before this is decided.
+
+## [0.3.0] — 2026-08-16
+
+Additive. Cost obligations were adequate in count but skewed in shape: all
+three cost gates were runtime ceilings, and nothing gated cost at release.
+
+### Added
+
+- `AAC-0102` Cost regression is gated at release — MUST, gate. `AAC-0013`
+  gated quality regression while cost was merely reported, so a change buying
+  a small quality gain for a large spend increase shipped unopposed.
+- `AAC-0103` Context growth is tracked across releases. Context grows by
+  accretion and each addition is individually defensible; nothing in a
+  per-release diff makes the accumulated total visible.
+- `AAC-0104` Spend is attributable to tenant, feature and route. Without it a
+  rising bill is observable but not diagnosable.
+- `AAC-0105` Tool results are bounded before they enter context (A6, A7). Cost
+  compounds with trajectory length, so it looks negligible in a single-call
+  trace and dominates in aggregate.
+
+### Design note
+
+Cost did **not** become a new category. Archetype is the axis, dimension is the
+tag, realization is orthogonal — cost is a quality attribute exactly like
+security or latency, and promoting one dimension to a category would invite the
+same for all seventeen.
+
+Cost gates, cost guardrails and cost anti-patterns are three different things:
+a gate is `dimension: cost` with `gate: true` at stage S3, a guardrail is the
+same dimension realized at S4, and an anti-pattern is not an obligation at all.
+
+### Noted, not fixed
+
+`latency` carries a single obligation (`AAC-0007`) against 12 for cost. Likely
+under-covered; not addressed here because it was out of scope for the change.
+
 ## [0.2.0] — 2026-08-16
 
 Additive. Every conformance claim made against 0.1.0 remains valid.
@@ -99,6 +140,7 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/basantchoudhary/ai-assurance-catalog/releases/tag/v0.1.0
