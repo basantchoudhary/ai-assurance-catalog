@@ -8,7 +8,7 @@
   "scripts": {
     "lint": "node tools/lint.js",
     "render": "node tools/render.js",
-    "build": "npm run lint && npm run render",
+    "build": "npm run lint && npm run build-example && npm run render",
     "test": "npm run lint && npm run build-example && npm run validate-report -- examples/coverage-report.example.json",
     "validate-report": "node tools/validate-report.js",
     "build-report": "node tools/build-report.js",
