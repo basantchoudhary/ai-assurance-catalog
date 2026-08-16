@@ -18,6 +18,24 @@ Remaining crosswalks: NIST AI RMF, ISO/IEC 42001, EU AI Act.
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
 
+## [0.11.2] — 2026-08-16
+
+Navigation and a counting bug, both found by a reader who could not find the
+build options.
+
+- **Added a section nav.** The rendered site had none, so every section below
+  the fold was reachable only by scrolling — which is most of why Section 6 was
+  invisible. `.controls` now sticks below the nav rather than at `top:0`, so the
+  two sticky bars cannot overlap.
+- **Fixed the shown count.** It read "109 shown" for 108 obligations. `AAC-0105`
+  is owed by both A6 and A7, so it appears under both group headings and was
+  counted twice. Distinct obligations are now counted, not group rows.
+
+Filter behaviour itself was verified end to end against the emitted client
+script rather than by inspection: archetype tabs, MUST-only, gates-only, has
+build options, free-text search, and the approach filter on the build table all
+change their lists.
+
 ## [0.11.1] — 2026-08-16
 
 Discoverability fix. The build options existed but were effectively hidden:
@@ -546,7 +564,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.1...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.2...HEAD
+[0.11.2]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.1...v0.11.2
 [0.11.1]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...v0.10.0

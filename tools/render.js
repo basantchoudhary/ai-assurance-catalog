@@ -117,7 +117,13 @@ h1{font-family:var(--mono);font-weight:600;font-size:clamp(30px,4.6vw,48px);line
 .meta-grid div{background:var(--surface);padding:12px 14px}
 .meta-grid dt{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-3);margin:0 0 4px}
 .meta-grid dd{margin:0;font-family:var(--mono);font-size:13px}
-section{padding:56px 0;border-bottom:1px solid var(--rule)}
+nav.toc{position:sticky;top:0;z-index:40;background:var(--paper);border-bottom:1px solid var(--rule);overflow-x:auto}
+nav.toc .wrap{display:flex;padding-top:0;padding-bottom:0}
+nav.toc ol{list-style:none;display:flex;gap:0;margin:0;padding:0;min-width:max-content}
+nav.toc a{display:block;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;text-decoration:none;color:var(--ink-2);padding:13px 16px 12px;border-bottom:2px solid transparent;white-space:nowrap}
+nav.toc a:hover{color:var(--ink);border-bottom-color:var(--rule-2)}
+nav.toc li:first-child a{padding-left:0}
+section{padding:56px 0;border-bottom:1px solid var(--rule);scroll-margin-top:46px}
 .snum{font-family:var(--mono);font-size:11px;letter-spacing:.16em;color:var(--accent);text-transform:uppercase;display:block;margin-bottom:12px}
 h2{font-family:var(--mono);font-weight:600;font-size:clamp(21px,2.6vw,28px);letter-spacing:-.015em;margin:0 0 18px;text-wrap:balance}
 h3{font-family:var(--mono);font-weight:600;font-size:16px;margin:0}
@@ -140,7 +146,7 @@ td.k{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowra
 .arch .acount{font-family:var(--mono);font-size:11px;color:var(--ink-3);text-align:right;white-space:nowrap;padding-top:4px}
 .arch .acount b{display:block;font-size:19px;color:var(--ink)}
 @media(max-width:660px){.arch{grid-template-columns:1fr;gap:8px}.arch .acount{text-align:left}}
-.controls{position:sticky;top:0;z-index:30;background:var(--paper);padding:14px 0 12px;border-bottom:1px solid var(--rule)}
+.controls{position:sticky;top:44px;z-index:30;background:var(--paper);padding:14px 0 12px;border-bottom:1px solid var(--rule)}
 .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
 .tabs button{font-family:var(--mono);font-size:11.5px;cursor:pointer;background:var(--surface);color:var(--ink-2);border:1px solid var(--rule);padding:6px 11px;border-radius:2px}
 .tabs button:hover{border-color:var(--rule-2);color:var(--ink)}
@@ -289,7 +295,7 @@ function render(){
     if (term && !(c.id + " " + c.title + " " + c.text + " " + c.dim + " " + c.tool + " " + (c.legacy||"")).toLowerCase().includes(term)) return false;
     return true;
   };
-  let out = "", shown = 0;
+  let out = ""; const seen = new Set();
   const groups = sel === "ALL"
     ? [["CORE", "Core — owed by every shape", core]].concat(D.archetypes.map(a => [a.id, a.name, D.cases.filter(c => !c.core && c.arch.includes(a.id))]))
     : sel === "CORE"
@@ -300,14 +306,14 @@ function render(){
   for (const [gid, gname, list0] of groups){
     const list = list0.filter(pass);
     if (!list.length) continue;
-    shown += list.length;
+    list.forEach(c => seen.add(c.id));
     const inherited = sel !== "ALL" && sel !== "CORE" && gid === "CORE";
     out += \`<div class="grouphdr"><span class="gid">\${gid}</span><h3>\${esc(gname)}</h3>
       <span class="ghint">\${inherited ? "inherited in full by " + sel : list.length + " case" + (list.length === 1 ? "" : "s")}</span></div>
       <div class="cases">\${list.map(caseHTML).join("")}</div>\`;
   }
-  document.getElementById("catalog-out").innerHTML = out || '<div class="empty">No cases match that filter.</div>';
-  document.getElementById("count").textContent = shown + " shown";
+  document.getElementById("catalog-out").innerHTML = out || '<div class="empty">No obligations match that filter.</div>';
+  document.getElementById("count").textContent = seen.size + " shown";
 }
 
 tabs.addEventListener("click", e => {
@@ -384,8 +390,18 @@ const html = `<title>AI Assurance Catalog</title>
     <div><dt>Build options</dt><dd id="m-how">—</dd></div>
   </dl>
 </div></header>
+<nav class="toc" aria-label="Sections"><div class="wrap"><ol>
+  <li><a href="#scope">Scope</a></li>
+  <li><a href="#archetypes">Archetypes</a></li>
+  <li><a href="#axes">Realization axes</a></li>
+  <li><a href="#catalog">The catalog</a></li>
+  <li><a href="#build">How to build it</a></li>
+  <li><a href="#patterns">Patterns</a></li>
+  <li><a href="#matrix">Coverage matrix</a></li>
+  <li><a href="#using">Using it</a></li>
+</ol></div></nav>
 <main>
-<section><div class="wrap prose">
+<section id="scope"><div class="wrap prose">
   <span class="snum">Section 1 — Scope</span>
   <h2>What this is, and what it refuses to be</h2>
   <p class="lede">A catalog of obligations organised by application shape, each mapped to how it can be physically realised.</p>
@@ -396,7 +412,7 @@ const html = `<title>AI Assurance Catalog</title>
   <div class="note"><span class="tag">Identifiers</span><p>Identifiers are flat and permanent — archetype is metadata, never identity, so re-tagging a case never breaks a citation. Draft 0.1's archetype-scoped identifiers are shown as <code>was A6-01</code> for traceability and are not citable.</p></div>
 </div></section>
 
-<section><div class="wrap">
+<section id="archetypes"><div class="wrap">
   <div class="prose"><span class="snum">Section 2 — Taxonomy</span>
   <h2>Ten shapes, and the compositions of them</h2>
   <p class="lede">Archetypes are distinguished by who owns control flow and what the output touches — not by domain or sector.</p>
@@ -404,7 +420,7 @@ const html = `<title>AI Assurance Catalog</title>
   <div class="arch-list" id="arch-list"></div>
 </div></section>
 
-<section><div class="wrap">
+<section id="axes"><div class="wrap">
   <div class="prose"><span class="snum">Section 3 — Realization axes</span>
   <h2>From English to machinery</h2>
   <p class="lede">Every obligation carries three tags: the mechanism that computes the verdict, the stage where it runs, and whether failure blocks.</p>
@@ -414,7 +430,7 @@ const html = `<title>AI Assurance Catalog</title>
   <p class="prose" style="font-size:15.5px;color:var(--ink-2)">Tool classes name a <em>class</em>, never a product. Products date the moment the market moves, and naming one turns a neutral catalog into a recommendation — so the linter fails the build if a product name appears in an obligation.</p>
 </div></section>
 
-<section><div class="wrap">
+<section id="catalog"><div class="wrap">
   <div class="prose"><span class="snum">Section 4 — The catalog</span>
   <h2>Obligations, in plain English</h2>
   <p class="lede">Select a shape. Core is always owed; the archetype block is what that shape adds on top.</p></div>
@@ -430,7 +446,7 @@ const html = `<title>AI Assurance Catalog</title>
   <div id="catalog-out"></div>
 </div></section>
 
-<section><div class="wrap">
+<section id="matrix"><div class="wrap">
   <div class="prose"><span class="snum">Section 5 — Coverage matrix</span>
   <h2>Which shapes carry which risks</h2>
   <p class="lede">Archetype deltas only; the core row is listed separately since it would otherwise appear in every column.</p>
@@ -467,7 +483,7 @@ ${crosswalks.map((cw) => `<section><div class="wrap">
   <div class="tbl-scroll" id="buildtbl"></div>
 </div></section>
 
-<section><div class="wrap">
+<section id="patterns"><div class="wrap">
   <div class="prose"><span class="snum">Section 7 — Patterns</span>
   <h2>Why these obligations exist</h2>
   <p class="lede">Informative. ${patterns.length} known failure shapes, each terminating in the obligations that would surface it — or declaring itself a gap.</p>
@@ -487,7 +503,7 @@ ${crosswalks.map((cw) => `<section><div class="wrap">
   </tbody></table></div>
 </div></section>
 
-<section><div class="wrap prose">
+<section id="using"><div class="wrap prose">
   <span class="snum">Section 8 — Using it</span>
   <h2>Turning the catalog into a test plan</h2>
   <ul class="plain">
