@@ -18,6 +18,53 @@ Remaining crosswalks: NIST AI RMF, ISO/IEC 42001, EU AI Act.
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
 
+## [0.11.0] — 2026-08-16
+
+Realizations for the three archetypes where the "how would I even test that?"
+question bites hardest. **163 concrete options across 60 obligations**, up from
+88 across 32.
+
+### Added
+
+- `realizations/agent.yaml` — 11 obligations, A6 tool-using agents
+- `realizations/judge.yaml` — 7 obligations, A10 judges, classifiers, routers
+- `realizations/retrieval.yaml` — 10 obligations, A3 grounded answerers
+
+### One organising fact per block
+
+**A6** — the thing under test is a *path*, not an answer. Almost every option is
+a trace assertion, because tool selection, error recovery, path efficiency and
+termination are unreachable by scoring output. `AAC-0060`, a reconstructable
+trajectory, is the prerequisite for the entire block: without it none of the
+others can be evaluated at all.
+
+**A3** — retrieval and generation fail independently, so `AAC-0028` measures the
+retriever with the generator removed and everything else follows. Most reported
+RAG quality failures are retrieval failures wearing a generation costume, and
+judging the answer harder will never separate them.
+
+**A10** — the block teams skip, which is what makes every other model-graded
+number in the system decorative. `AAC-0084` insists on a chance-corrected
+agreement statistic rather than raw accuracy, because on a skewed label
+distribution a judge that always says "pass" scores well and agrees with nobody.
+
+### Where the cheap deterministic option beats the product
+
+Writing these out made a pattern obvious enough to record. Several obligations
+have an `in-house` option that is a dozen lines and stronger than anything you
+could buy, because it asserts what you meant rather than what a product happens
+to measure:
+
+- `AAC-0029` — assert every number and named entity in the answer appears in the
+  retrieved context. Deterministic, free, and it covers the factual claims a
+  faithfulness judge is least reliable about.
+- `AAC-0030` — assert citations *resolve* before paying a judge to assess
+  whether they *support*.
+- `AAC-0058`, `AAC-0036` — a canary token planted in tool output and in
+  retrieved documents catches indirect injection that no input-side defence sees.
+- `AAC-0087` — ask the judge for a small ordinal label instead of a continuous
+  score; there is less to miscalibrate.
+
 ## [0.10.0] — 2026-08-16
 
 The spec-to-concrete layer. An obligation nobody knows how to build is a
@@ -485,7 +532,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.10.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.0...HEAD
+[0.11.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...v0.8.0

@@ -1,0 +1,181 @@
+# A6 tool-using agent — how the obligations get built, concretely.
+#
+# INFORMATIVE. Products may be named here and nowhere else. Verify every
+# product claim before relying on it; see realizations/README.md.
+#
+# This block is where "how would I even test that?" bites hardest, because the
+# thing under test is a PATH rather than an answer. Almost everything here is a
+# trace assertion, and none of it is reachable by scoring output alone.
+
+layer: realization
+status: informative
+version: "0.11.0"
+checked: "2026-08"
+
+cases:
+
+  AAC-0051:  # Tool selection accuracy, including no-tool
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [your trace exporter, pytest]
+        how: For each labelled intent, assert the set of tools actually called matches the expected set — and include cases where the correct answer is to call nothing.
+        caveat: The no-tool cases are the whole point. A dataset built only from tool-requiring questions cannot see an agent that reaches for a tool it did not need, which is the most common defect in this archetype.
+      - approach: open-source
+        mechanism: M5
+        tools: [promptfoo, DeepEval]
+        how: Assert on the tool-call payload the model returned, or use a tool-correctness metric over the recorded trajectory.
+      - approach: platform
+        mechanism: M5
+        tools: [LangSmith trajectory evaluators, Langfuse, Arize Phoenix]
+        how: Compare the recorded trajectory against a reference one and score tool choice per step.
+
+  AAC-0052:  # Arguments valid syntactically and semantically
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [Pydantic, JSON Schema]
+        how: Validate arguments against the tool's own schema at dispatch, then check the entities referenced actually exist with a real lookup.
+        caveat: Two separate checks. A well-typed call naming a table that does not exist passes schema validation and still fails.
+      - approach: in-house
+        mechanism: M5
+        tools: [span attributes]
+        how: Record arguments on the tool span so a malformed call is diagnosable after the fact rather than only at the moment it failed.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [provider function-calling schemas]
+        how: Let the provider constrain generation to the declared signature.
+        caveat: Constrains shape, never meaning. Semantic validity is still yours.
+
+  AAC-0053:  # Recovery from tool errors and empty results
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [tool stubs, pytest]
+        how: Make each tool return an error, an empty set, a timeout and a malformed payload in turn; assert the agent adapts or stops.
+        caveat: Test every tool, not one representative. Recovery is usually implemented for the tool someone once saw fail.
+      - approach: in-house
+        mechanism: M5
+        tools: [trace assertions]
+        how: Assert the trace contains no identical call repeated after an error — the signature of an agent retrying rather than adapting.
+      - approach: open-source
+        mechanism: M7
+        tools: [toxiproxy, responses, VCR]
+        how: Inject transport-level faults beneath the tool implementation.
+
+  AAC-0054:  # Path efficiency against a reference trajectory
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [your trace exporter]
+        how: Record step count, token total and duplicate-call count per task; compare against a known-good path and fail on regression.
+        caveat: Correct answers reached by wandering pass every output-based check. This is a cost and latency defect that only trace assertions can see.
+      - approach: platform
+        mechanism: M5
+        tools: [LangSmith, Langfuse, Arize Phoenix]
+        how: Trajectory comparison against a reference run, with step-level diffing.
+      - approach: open-source
+        mechanism: M5
+        tools: [DeepEval task-completion metrics, promptfoo custom assertions]
+        how: Score the recorded trajectory rather than the final answer.
+
+  AAC-0055:  # Hard termination under every condition
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [your agent harness, pytest]
+        how: Enforce maximum steps, wall-clock and token budget in the loop itself; test the stop path including what it returns as a partial result.
+        caveat: A limit stated in the prompt is a request, not enforcement. It holds while the model cooperates, which is exactly not the condition you need it for.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Budget ceiling per request or session, enforced outside the agent entirely.
+        caveat: The backstop for the case where the loop's own counter is the thing that broke.
+
+  AAC-0056:  # Destructive actions are gated
+    options:
+      - approach: cloud-native
+        mechanism: M1
+        tools: [scoped IAM roles, read-only credentials]
+        how: Give the agent a credential that simply cannot perform the destructive action.
+        caveat: Strongest form by a distance. Removing the capability beats gating it, and needs no test of the gate because there is no path.
+      - approach: in-house
+        mechanism: M1
+        tools: [a dry-run wrapper, an allowlist]
+        how: Require confirmation or a dry-run for side-effecting tools; test by adversarially provoking the destructive path.
+      - approach: human
+        mechanism: M6
+        tools: [an approval queue]
+        how: Pause for authorisation, and test the timeout behaviour as well as the approval.
+
+  AAC-0057:  # Least privilege enforced server-side
+    options:
+      - approach: cloud-native
+        mechanism: M1
+        tools: [IAM, short-lived credentials, service accounts per agent]
+        how: Scope the agent's identity to exactly the resources it needs, and let the platform refuse the rest.
+      - approach: in-house
+        mechanism: M1
+        tools: [authz inside the tool implementation]
+        how: Check authorisation in the tool itself, and verify by calling it out of scope directly, bypassing the agent.
+        caveat: Bypassing the agent is the test that matters. Anything enforced only in the prompt or in the calling code is not enforcement.
+      - approach: gateway
+        mechanism: M1
+        tools: [per-key scoping, virtual keys]
+        how: Scope credentials per agent at the proxy so a leaked key has bounded reach.
+
+  AAC-0058:  # Injection arriving through tool output
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [a canary corpus]
+        how: Plant an instruction carrying a distinctive token in tool results; assert the token never reaches output or a subsequent tool argument.
+        caveat: Cheapest high-signal test in the archetype. Any tool returning content from a system you do not control needs it.
+      - approach: in-house
+        mechanism: M1
+        tools: [message roles, delimiters]
+        how: Keep tool output structurally distinct from instructions, then test that the boundary holds under adversarial content.
+      - approach: open-source
+        mechanism: M7
+        tools: [garak, PyRIT, promptfoo red-team]
+        how: Indirect-injection attack suites aimed at the tool-result channel.
+
+  AAC-0059:  # Reproducible trajectories with mocked tools
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [deterministic tool stubs, temperature 0, a fixed seed]
+        how: Snapshot the trajectory under fixed tool responses and fail on unexplained divergence.
+        caveat: This is what makes path-efficiency measurement a signal rather than noise. Do it before trusting any trajectory metric.
+      - approach: in-house
+        mechanism: M5
+        tools: [VCR-style record and replay]
+        how: Record real provider responses once and replay them, so CI exercises the loop without a model.
+
+  AAC-0060:  # Full trajectory reconstructable from the trace
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry SDK, GenAI semantic conventions]
+        how: One span per step with parent-child structure intact, carrying the tool name, arguments, result class and token cost.
+        caveat: Prerequisite for every other A6 obligation. Without it, none of tool selection, recovery, efficiency or termination can be evaluated at all.
+      - approach: open-source
+        mechanism: M5
+        tools: [OpenInference, OpenLLMetry]
+        how: Agent-aware auto-instrumentation for common frameworks.
+      - approach: platform
+        mechanism: M5
+        tools: [LangSmith, Langfuse, Arize Phoenix]
+        how: Nested trace trees with per-step inspection in the UI.
+
+  AAC-0105:  # Tool results are bounded before they enter context
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [a truncation or summarisation policy, pytest]
+        how: Cap, summarise or paginate tool output before adding it to the messages array; assert the token size of the tool message.
+        caveat: The cost compounds with trajectory length, so it looks negligible in a single-call trace and dominates in aggregate.
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry]
+        how: Record context tokens by step index so growth within a run is visible, not just the total.

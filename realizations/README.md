@@ -22,9 +22,27 @@ AAC-0008:                        # cost per successful task
            instrumentation missed.
 ```
 
-Currently: **the 32 core obligations, 88 concrete options.** These are the ones
-every AI application owes regardless of shape, so they are the right slice to do
-first. Archetype-specific realizations follow.
+Currently **163 concrete options across 60 obligations**:
+
+| File | Block | |
+|---|---|---|
+| `core.yaml` | 32 core | owed by every AI application, whatever its shape |
+| `agent.yaml` | 11 · A6 | tool-using agents |
+| `judge.yaml` | 7 · A10 | judges, classifiers, routers |
+| `retrieval.yaml` | 10 · A3 | grounded answerers (RAG) |
+
+Core first because everyone owes it; then the three archetypes where *"how would
+I even test that?"* bites hardest. A1, A2, A4, A5, A7, A8 and A9 remain.
+
+Each block has an organising fact worth reading before its entries:
+
+- **A6** — the thing under test is a *path*, not an answer. Almost everything is
+  a trace assertion, and none of it is reachable by scoring output alone.
+- **A3** — retrieval and generation fail independently, so test the retriever
+  with the generator removed first. Most reported RAG failures are retrieval
+  failures wearing a generation costume.
+- **A10** — this is the block teams skip, and skipping it is what makes every
+  other model-graded number in the system decorative.
 
 ## Six approaches
 

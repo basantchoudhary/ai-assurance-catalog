@@ -1,0 +1,122 @@
+# A10 classifier, router and judge — how the obligations get built, concretely.
+#
+# INFORMATIVE. Products may be named here and nowhere else. Verify every
+# product claim before relying on it; see realizations/README.md.
+#
+# This block is the one teams skip, and skipping it is what makes every other
+# model-graded number decorative. If a model assigns a score anywhere in your
+# system, these apply to it.
+
+layer: realization
+status: informative
+version: "0.11.0"
+checked: "2026-08"
+
+cases:
+
+  AAC-0084:  # Agreement with human labels
+    options:
+      - approach: human
+        mechanism: M6
+        tools: [an annotation queue, two or more raters]
+        how: Have humans label a sample, then score the judge against them with an agreement statistic that corrects for chance — Cohen's kappa, or Krippendorff's alpha for more than two raters.
+        caveat: Raw accuracy is not enough. On a skewed label distribution a judge that always says "pass" scores well and agrees with nobody.
+      - approach: platform
+        mechanism: M6
+        tools: [LangSmith annotation queues, Langfuse, Braintrust]
+        how: Route sampled traces to reviewers in the same tool that stores the judge's scores, so the join is free.
+      - approach: open-source
+        mechanism: M6
+        tools: [Label Studio, Argilla]
+        how: Self-hosted annotation where the content cannot leave your environment.
+      - approach: in-house
+        mechanism: M2
+        tools: [scipy, a bootstrap]
+        how: Compute the statistic with a confidence interval, and refuse to report below a minimum sample size.
+        caveat: A kappa from thirty examples is a rumour. Report the interval or do not report the number.
+
+  AAC-0085:  # Known judge biases are probed
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [your eval harness]
+        how: Permute the inputs — swap candidate order, pad one response with harmless length, change markdown formatting — and measure how often the verdict flips.
+        caveat: Position, verbosity and self-preference bias are documented and reproducible. A flip under permutation is not noise; it is the bias measuring itself.
+      - approach: open-source
+        mechanism: M7
+        tools: [promptfoo, DeepEval]
+        how: Pairwise comparison run in both orders, with disagreement recorded as a tie rather than a win.
+      - approach: in-house
+        mechanism: M1
+        tools: [a different judge model]
+        how: Never let a model grade its own output as the only signal; a model grading its own family is a known-soft judge.
+
+  AAC-0086:  # Verdict stability across runs and rewording
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [your eval harness]
+        how: Score the same pair N times, and again with the rubric reworded but semantically unchanged; report the spread.
+        caveat: An unstable judge cannot gate a release, because the gate becomes a coin flip that happens to be correlated with quality.
+      - approach: platform
+        mechanism: M2
+        tools: [repeat runs on an experiment]
+        how: Repeat the scoring run and read variance alongside the mean.
+
+  AAC-0087:  # Confidence scores are calibrated
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [a reliability diagram, expected calibration error]
+        how: Bucket the judge's scores and check that a 0.8 bucket really is right about 80% of the time against human labels.
+        caveat: An uncalibrated 0.8 is a number, not evidence. Any threshold set on top of it is arbitrary until this is measured once.
+      - approach: in-house
+        mechanism: M1
+        tools: [ordinal labels instead of scores]
+        how: Ask the judge for a small ordinal label rather than a continuous score, so there is less to miscalibrate.
+        caveat: Often the better answer. A judge asked for pass/borderline/fail is more stable than one asked for a number between 0 and 1.
+
+  AAC-0088:  # Guardrail false-positive and false-negative rates
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [a labelled set with both classes]
+        how: Measure block rate on violating content and over-block rate on legitimate content that superficially resembles it.
+        caveat: Both directions or neither. Over-blocking is a product failure that never appears in a dashboard counting blocks.
+      - approach: cloud-native
+        mechanism: M2
+        tools: [Azure AI Content Safety, Amazon Bedrock Guardrails, Vertex AI safety filters]
+        how: Use the managed classifier, but keep your own labelled set to measure it on your traffic.
+        caveat: A vendor's published rates are for their distribution, not yours.
+      - approach: platform
+        mechanism: M2
+        tools: [scored production samples]
+        how: Track the confusion matrix on live traffic and alert on drift in either direction.
+
+  AAC-0089:  # Routing saves money without losing quality
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [your golden set]
+        how: Run the router against always-primary on the same set and report cost saved and quality delta together, per route.
+        caveat: Together, always. Either number alone can be made to look good by making the other worse.
+      - approach: gateway
+        mechanism: M2
+        tools: [LiteLLM, Portkey, Cloudflare AI Gateway]
+        how: Per-route cost and cache-hit reporting from the component making the decision.
+      - approach: in-house
+        mechanism: M7
+        tools: [boundary cases]
+        how: Test escalation thresholds at their edges, where a small input change flips the route.
+
+  AAC-0090:  # The judge is re-validated when it changes
+    options:
+      - approach: in-house
+        mechanism: M6
+        tools: [a pinned judge signature, a CI gate]
+        how: Hash the judge model identifier and rubric together; when the hash changes, re-run the human-agreement check before the judge is trusted again.
+        caveat: Silently upgrading the judge invalidates every historical comparison you have. The scores stay in the database and quietly stop meaning the same thing.
+      - approach: platform
+        mechanism: M1
+        tools: [prompt registry versioning]
+        how: Version the rubric like code so a change is a reviewable event rather than an edit.

@@ -1,0 +1,159 @@
+# A3 grounded answerer (RAG) — how the obligations get built, concretely.
+#
+# INFORMATIVE. Products may be named here and nowhere else. Verify every
+# product claim before relying on it; see realizations/README.md.
+#
+# The organising fact for this block: retrieval and generation fail
+# independently. Most reported RAG quality failures are retrieval failures
+# wearing a generation costume, and no amount of judging the answer will
+# separate them. Test the retriever without the generator first.
+
+layer: realization
+status: informative
+version: "0.11.0"
+checked: "2026-08"
+
+cases:
+
+  AAC-0028:  # Retrieval quality measured on its own
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [gold question-to-document pairs]
+        how: Score recall@k and MRR with the generator removed from the loop entirely.
+        caveat: Do this before anything else in the block. A faithfulness score on an answer built from the wrong chunks tells you nothing about the generator.
+      - approach: open-source
+        mechanism: M2
+        tools: [Ragas context recall, BEIR-style harnesses]
+        how: Library metrics over a labelled retrieval set.
+      - approach: platform
+        mechanism: M2
+        tools: [LangSmith, Arize Phoenix, Langfuse]
+        how: Retrieval evaluators scored per query and sliceable by document source.
+
+  AAC-0029:  # Every claim is supported by retrieved context
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [a number and entity extractor]
+        how: For factual domains, assert every figure and named entity in the answer appears in the retrieved context.
+        caveat: Cheap, deterministic and strong wherever the answer carries numbers. Reach for a judge only for the claims this cannot cover.
+      - approach: open-source
+        mechanism: M3
+        tools: [Ragas faithfulness, DeepEval faithfulness and hallucination metrics]
+        how: Decompose the answer into claims and score each against the supplied context.
+      - approach: cloud-native
+        mechanism: M3
+        tools: [Azure AI groundedness detection, Amazon Bedrock contextual grounding check]
+        how: Managed groundedness scoring, available inline as a guardrail as well as offline.
+      - approach: platform
+        mechanism: M3
+        tools: [LangSmith, Langfuse, Braintrust]
+        how: Groundedness scorers on a dataset and on sampled production traffic.
+
+  AAC-0030:  # Citations resolve and actually support the sentence
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [pytest]
+        how: Assert every citation identifier resolves to a chunk that was actually retrieved for that query.
+        caveat: Resolvability is deterministic and free. Do it before paying a judge to assess support.
+      - approach: open-source
+        mechanism: M3
+        tools: [a rubric scorer]
+        how: Judge whether the cited chunk supports the specific claim attached to it, not merely the topic.
+
+  AAC-0031:  # Abstention when the corpus cannot answer
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [a deliberately unanswerable set]
+        how: Build questions the corpus genuinely cannot answer and measure the refusal rate.
+        caveat: This set will never appear by accident. A dataset curated from answerable questions contains no unanswerable ones, so the obligation stays silently untested unless someone builds it on purpose.
+      - approach: open-source
+        mechanism: M3
+        tools: [Ragas answer relevancy, DeepEval]
+        how: Score whether the answer actually addresses the question or pads around a gap.
+
+  AAC-0032:  # Retrieval respects the caller's permissions
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [query-time filters, pytest]
+        how: Apply the caller's access control as a filter in the retrieval query itself, and test adversarially with two principals and one document.
+        caveat: In the query, never in the prompt. A prompt instruction not to reveal a chunk it already retrieved is not access control.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [document-level ACLs in managed search, row-level security]
+        how: Let the search service enforce entitlements it already knows about.
+      - approach: in-house
+        mechanism: M7
+        tools: [a cross-tenant test fixture]
+        how: Assert that user A's query can never return user B's document, including through cached or pre-computed paths.
+
+  AAC-0033:  # Context precision and noise tolerance
+    options:
+      - approach: open-source
+        mechanism: M2
+        tools: [Ragas context precision]
+        how: Measure what proportion of retrieved context was actually relevant.
+      - approach: in-house
+        mechanism: M7
+        tools: [injected distractors]
+        how: Add deliberately irrelevant chunks and measure how far answer quality falls.
+        caveat: Tells you how much headroom you have before retrieval degradation becomes user-visible.
+
+  AAC-0034:  # Index rebuilds are gated by evaluation
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [a CI job on the indexing pipeline]
+        how: Re-run the retrieval suite whenever chunking, the embedding model or corpus content changes, and gate promotion on it.
+        caveat: The generator is untouched and quality moves anyway. Teams look for the regression in the prompt for days.
+      - approach: platform
+        mechanism: M2
+        tools: [dataset runs tagged by index version]
+        how: Score per index version so a regression is attributable to a rebuild.
+
+  AAC-0035:  # Conflicting and stale sources
+    options:
+      - approach: in-house
+        mechanism: M3
+        tools: [a curated contradiction set]
+        how: Assemble questions the corpus answers two ways and assert the defined behaviour — surface the conflict, prefer the newest, or refuse.
+      - approach: in-house
+        mechanism: M1
+        tools: [freshness metadata]
+        how: Carry an effective date on every chunk and assert the newest wins where documents supersede each other.
+
+  AAC-0036:  # Injection carried in retrieved documents
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [a poisoned test corpus]
+        how: Plant documents containing instruction-shaped text with a canary token and assert the generator treats them as data.
+        caveat: Highest-yield attack against this archetype, and invisible to every input-side defence, because the attack never passes through the user's prompt.
+      - approach: open-source
+        mechanism: M7
+        tools: [garak, PyRIT, promptfoo red-team]
+        how: Indirect-injection suites aimed at the retrieval channel.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [content safety on retrieved text]
+        how: Screen retrieved chunks before they enter the prompt, not only the user's input.
+
+  AAC-0108:  # Corpus ingestion is controlled and auditable
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [provenance metadata, checksums]
+        how: Record source, ingest time and a content hash on every chunk, so the corpus can be audited and a bad source withdrawn wholesale.
+        caveat: Without provenance you cannot answer "which documents did this bad answer come from" or remove them, which is the only remediation available.
+      - approach: in-house
+        mechanism: M7
+        tools: [an audit query]
+        how: Periodically scan the corpus for instruction-shaped or contradictory content rather than waiting for it to surface in an answer.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [an ingestion pipeline with a source allowlist]
+        how: Restrict which systems may write to the index at the infrastructure layer.
