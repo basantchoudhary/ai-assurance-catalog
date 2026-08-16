@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.11.2** — identifiers are stable from the first tagged
+Status: **working draft 0.11.3** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---

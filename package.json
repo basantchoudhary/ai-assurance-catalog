@@ -1,6 +1,6 @@
 {
   "name": "ai-assurance-catalog",
-  "version": "0.11.2",
+  "version": "0.11.3",
   "description": "Test obligations for AI applications, by architecture archetype. A catalog, not a framework.",
   "license": "Apache-2.0",
   "private": true,
@@ -8,12 +8,13 @@
   "scripts": {
     "lint": "node tools/lint.js",
     "render": "node tools/render.js",
-    "build": "npm run lint && npm run build-example && npm run render",
+    "build": "npm run lint && npm run build-example && npm run render && npm run check-page",
     "test": "npm run lint && npm run build-example && npm run validate-report -- examples/coverage-report.example.json",
     "validate-report": "node tools/validate-report.js",
     "build-report": "node tools/build-report.js",
     "build-example": "node tools/build-report.js examples/aac.config.yaml -o coverage-report.example.json",
-    "badge": "node tools/badge.js"
+    "badge": "node tools/badge.js",
+    "check-page": "node tools/check-page.js site/index.html"
   },
   "dependencies": {
     "ajv": "^8.17.1",

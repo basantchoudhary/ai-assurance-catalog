@@ -33,6 +33,9 @@ jobs:
 
       # The site is a build artifact. If a rebuild produces a diff, someone
       # edited generated output instead of the catalog it comes from.
+      # The page is useless if its client script dies before rendering.
+      - run: npm run check-page
+
       - name: site/ is in sync with catalog/
         run: |
           npm run render

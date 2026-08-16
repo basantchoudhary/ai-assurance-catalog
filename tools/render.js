@@ -440,6 +440,7 @@ const html = `<title>AI Assurance Catalog</title>
       <input type="search" id="q" placeholder="Filter by keyword, dimension or identifier…" aria-label="Filter obligations">
       <label><input type="checkbox" id="mustonly"> MUST only</label>
       <label><input type="checkbox" id="gateonly"> Gates only</label>
+      <label><input type="checkbox" id="howonly"> Has build options</label>
       <span class="count" id="count"></span>
     </div>
   </div>
@@ -523,6 +524,21 @@ ${crosswalks.map((cw) => `<section><div class="wrap">
 <script>window.__AAC__ = ${JSON.stringify(data)};</script>
 <script>${CLIENT}</script>
 `;
+
+/*
+ * Every getElementById in the client script must have matching markup. A
+ * missing id is not a cosmetic problem: the null deref throws before render()
+ * is ever called, so the page renders its headings and no content at all.
+ * This has happened once; the check exists so it cannot happen twice.
+ */
+{
+  const wanted = [...CLIENT.matchAll(/getElementById\("([^"]+)"\)/g)].map((m) => m[1]);
+  const missing = [...new Set(wanted)].filter((id) => !html.includes(`id="${id}"`));
+  if (missing.length) {
+    console.error(`render: client script looks up ids with no markup: ${missing.join(", ")}`);
+    process.exit(1);
+  }
+}
 
 fs.mkdirSync(path.join(ROOT, "site"), { recursive: true });
 fs.writeFileSync(path.join(ROOT, "site", "index.html"), html);
