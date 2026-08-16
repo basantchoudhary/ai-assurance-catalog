@@ -12,11 +12,58 @@ ship. A quarter with no changes ships a release note saying so.
 Phase 1: crosswalks to OWASP LLM Top 10, NIST AI RMF, ISO/IEC 42001 and the
 EU AI Act.
 
-Under consideration: an informative `patterns/` catalog of known anti-patterns
-mapping into the obligations that catch them. Anti-patterns are diagnoses, not
-obligations, so they would be crosswalk-shaped and non-normative rather than
-cases. See the note in [docs/NON-GOALS.md](docs/NON-GOALS.md) about authoring
-taxonomies before this is decided.
+Two obligations to write, both surfaced by `patterns/` against 0.4.0 — see
+"An empty caught_by is a finding" in [patterns/README.md](patterns/README.md).
+
+## [0.4.0] — 2026-08-16
+
+Additive, and entirely informative — no normative case changed, so every
+conformance claim against 0.3.0 remains valid.
+
+### Added — `patterns/` (18 patterns)
+
+An informative catalogue of known failure shapes: symptom, mechanism, and the
+obligations that would surface it. 12 cost patterns, 6 agent patterns.
+
+Patterns are **diagnoses, not obligations**. Keeping them separate is what lets
+a case statement stay short — the pattern carries the war story so the
+obligation does not have to. They sit in their own `AACP-####` namespace, flat
+with domain as metadata, applying to ourselves the same rule the catalog applies
+to archetypes.
+
+- `schema/pattern.schema.json`
+- Linter validates patterns, checks `caught_by` resolves, and enforces flat
+  identifier sequencing
+- Renderer emits a patterns section
+
+### The rule that earns the directory
+
+**A pattern must terminate in a case identifier or declare itself a gap.** The
+schema permits `caught_by: []` only alongside a `gap_note`, and the linter
+reports every one prominently rather than passing silently.
+
+That makes `patterns/` coverage validation pointed back at `catalog/`. A pattern
+nobody can catch is a finding against the catalog, not an omission in the
+pattern. The first pass found two:
+
+- `AACP-0006` **Cancellation is not propagated** — nothing requires an abandoned
+  request to stop costing money. AAC-0093 bounds spend and AAC-0007 bounds
+  latency; neither covers this.
+- `AACP-0007` **Volatile prompt prefix defeats caching** — nothing requires
+  prompt construction to preserve cache prefixes, or hit rate to be monitored.
+  Adjacent to AAC-0089, but that case is about routing rather than prompt
+  layout.
+
+### Design note — a deliberate exception to NON-GOALS
+
+A pattern catalogue is a taxonomy, which `docs/NON-GOALS.md` forbids. The
+exception is bounded by three conditions, now recorded there: no incumbent owns
+this ground (OWASP LLM10 is a security framing, not an economic one); it is
+explicitly non-normative and cannot be claimed as conformance; and every pattern
+must terminate in a case or a gap note.
+
+If any condition stops holding, the directory should be removed and the content
+contributed upstream instead.
 
 ## [0.3.0] — 2026-08-16
 
@@ -140,7 +187,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/basantchoudhary/ai-assurance-catalog/releases/tag/v0.1.0

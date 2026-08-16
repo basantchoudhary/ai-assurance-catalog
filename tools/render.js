@@ -28,6 +28,16 @@ const cases = fs
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const patDir = path.join(ROOT, "patterns");
+const patterns = !fs.existsSync(patDir) ? [] : fs
+  .readdirSync(patDir)
+  .filter((f) => f.endsWith(".yaml"))
+  .sort()
+  .flatMap((f) => {
+    const d = yaml.load(fs.readFileSync(path.join(patDir, f), "utf8"));
+    return d.patterns.filter((p) => p.status === "active").map((p) => ({ ...p, domain: d.domain }));
+  });
+
 const data = {
   version: pkg.version,
   archetypes: arch.archetypes,
@@ -330,8 +340,28 @@ const html = `<title>AI Assurance Catalog</title>
   <div class="matrix" id="matrix"></div>
 </div></section>
 
+<section><div class="wrap">
+  <div class="prose"><span class="snum">Section 6 — Patterns</span>
+  <h2>Why these obligations exist</h2>
+  <p class="lede">Informative. ${patterns.length} known failure shapes, each terminating in the obligations that would surface it — or declaring itself a gap.</p>
+  <p>A pattern is a diagnosis, not an obligation. Keeping the two apart is what lets a case statement stay short: the pattern carries the war story so the obligation does not have to. Nothing in this section is required for conformance.</p>
+  <p>The rule that earns the section: a pattern must terminate in a case identifier or state what is missing. <strong>An uncaught pattern is a hole in the catalog</strong>, not an omission in the pattern — so this doubles as coverage validation, and the linter reports every one of them rather than passing silently.</p></div>
+  <div class="tbl-scroll"><table style="min-width:820px"><thead><tr>
+    <th style="width:96px">ID</th><th style="width:210px">Pattern</th><th>Symptom</th><th style="width:170px">Caught by</th>
+  </tr></thead><tbody>
+  ${patterns.map((p) => `<tr>
+    <td class="k">${p.id}</td>
+    <td><strong>${esc(p.name)}</strong><br><span style="font-family:var(--mono);font-size:10.5px;color:var(--ink-3)">${esc(p.domain)} · ${p.archetypes.join(" ")}</span></td>
+    <td>${esc(p.symptom.trim())}</td>
+    <td>${p.caught_by.length
+      ? `<span class="chips">${p.caught_by.map((c) => `<span class="chip">${c}</span>`).join("")}</span>`
+      : `<span class="chip gate">gap — no case</span>`}</td>
+  </tr>`).join("")}
+  </tbody></table></div>
+</div></section>
+
 <section><div class="wrap prose">
-  <span class="snum">Section 6 — Using it</span>
+  <span class="snum">Section 7 — Using it</span>
   <h2>Turning the catalog into a test plan</h2>
   <ul class="plain">
     <li><strong>Classify.</strong> Decompose the system into archetypes — most are two or three. Write the classification down; it is the assumption everything rests on and the thing most likely to be wrong.</li>

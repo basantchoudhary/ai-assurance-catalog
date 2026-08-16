@@ -1,0 +1,194 @@
+# INFORMATIVE. Patterns are diagnoses, not obligations. Nothing here is required
+# for conformance — see patterns/README.md.
+
+domain: cost
+version: "0.4.0"
+
+patterns:
+  - id: AACP-0001
+    name: Retry amplification
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10]
+    symptom: >-
+      Spend rises while request volume is flat. Per-call cost dashboards look
+      healthy and the invoice does not.
+    mechanism: >-
+      Retries, provider fallbacks and discarded partial results are recorded
+      against the attempt rather than the task that caused them. A task that
+      succeeds on the fourth try is billed four times and counted once, so any
+      metric with calls in the denominator averages the problem away.
+    caught_by: [AAC-0008, AAC-0102, AAC-0104]
+
+  - id: AACP-0002
+    name: Context accretion
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10]
+    symptom: >-
+      Input tokens per task climb steadily across releases with no single change
+      responsible.
+    mechanism: >-
+      Prompts grow by accumulation — one more instruction after an incident, an
+      extra few-shot example, a wider retrieval window. Each addition is
+      individually justified and none is ever removed, because nobody owns the
+      total and no release diff shows it.
+    caught_by: [AAC-0103]
+
+  - id: AACP-0003
+    name: Conversation tail cost
+    status: active
+    since: "0.4.0"
+    archetypes: [A4, A6, A7]
+    symptom: >-
+      Long sessions cost far more than session count suggests. Cost per turn
+      rises with turn index.
+    mechanism: >-
+      Each turn resends accumulated history, so spend grows with the square of
+      conversation length rather than linearly. Averaging cost across all turns
+      hides it completely: the median turn is cheap and the tail is not.
+    caught_by: [AAC-0042, AAC-0103]
+
+  - id: AACP-0004
+    name: Tool-output dumping
+    status: active
+    since: "0.4.0"
+    archetypes: [A6, A7]
+    symptom: >-
+      Agent runs that touch data-returning tools cost many times those that do
+      not, out of proportion to their step count.
+    mechanism: >-
+      A full result set is pasted into context and then resent on every
+      subsequent iteration of the loop. The cost is incurred once and paid
+      repeatedly, so it appears negligible in any single-call view and dominates
+      in aggregate.
+    caught_by: [AAC-0105, AAC-0054]
+
+  - id: AACP-0005
+    name: Frontier-model default
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A2, A5, A6, A7, A10]
+    symptom: >-
+      The most capable available model serves every call, including
+      classification, routing and formatting steps.
+    mechanism: >-
+      The model is chosen once during prototyping, when capability is the only
+      question, and never revisited per call site. Internal steps that would be
+      indistinguishable on a cheap model inherit the default because nothing
+      forces the comparison.
+    caught_by: [AAC-0089, AAC-0102]
+
+  - id: AACP-0006
+    name: Cancellation is not propagated
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A3, A4, A6, A8]
+    symptom: >-
+      Spend attributable to sessions the user abandoned. Generation continues
+      after the client has disconnected.
+    mechanism: >-
+      A closed connection ends delivery but not inference. Without cancellation
+      propagated to the provider, the full completion is generated and billed
+      for an audience that is no longer there — and abandonment correlates with
+      slow responses, so this concentrates in exactly the worst requests.
+    caught_by: []
+    gap_note: >-
+      No obligation covers cancellation propagation. AAC-0093 bounds spend and
+      AAC-0007 bounds latency, but neither requires that an abandoned request
+      stops costing money. A candidate case is open.
+
+  - id: AACP-0007
+    name: Volatile prompt prefix defeats caching
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A2, A3, A4, A5, A6, A7, A8, A10]
+    symptom: >-
+      Prompt-cache hit rate near zero despite a large, stable system prompt.
+      Cost per call does not fall as expected after enabling caching.
+    mechanism: >-
+      A timestamp, session identifier, request id or randomised ordering sits
+      near the start of the prompt. Prefix caching matches on an exact leading
+      span, so a few volatile tokens at the top invalidate a large stable
+      remainder. The change that introduces it is usually an unrelated
+      observability improvement.
+    caught_by: []
+    gap_note: >-
+      No obligation requires that prompt construction preserves cache
+      prefixes, nor that hit rate is monitored. Adjacent to AAC-0089 but that
+      case is about routing decisions rather than prompt layout.
+
+  - id: AACP-0008
+    name: Unbounded fan-out under a supervisor
+    status: active
+    since: "0.4.0"
+    archetypes: [A7]
+    symptom: >-
+      Occasional runs cost orders of magnitude more than the median with no
+      obvious difference in the request.
+    mechanism: >-
+      A supervisor delegates to sub-agents that may themselves delegate. Each
+      agent respects its own budget, so every local check passes while the
+      product of the branching factors does not. The distribution is
+      long-tailed, so it survives testing and appears in production.
+    caught_by: [AAC-0064, AAC-0067]
+
+  - id: AACP-0009
+    name: Ungoverned direct provider access
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A2, A3, A4, A5, A6, A7, A8, A9, A10]
+    symptom: >-
+      Provider invoices exceed the total of all gateway-attributed spend.
+      Inventory of models in use cannot be reconciled with what is billed.
+    mechanism: >-
+      Application code holds provider credentials directly and calls around the
+      gateway, usually starting as a prototype or a latency workaround. Every
+      control implemented at the gateway — quota, redaction, model allowlist,
+      residency — is absent on that path, and nothing reports its existence.
+    caught_by: [AAC-0094, AAC-0104]
+
+  - id: AACP-0010
+    name: Judge cost exceeds the system it judges
+    status: active
+    since: "0.4.0"
+    archetypes: [A10]
+    symptom: >-
+      Evaluation spend approaches or exceeds serving spend. Online scoring is
+      the largest line item.
+    mechanism: >-
+      A model-graded scorer is applied to all production traffic rather than a
+      sample, often using a more capable model than the one being scored. The
+      cost is filed under observability where nobody looks for spend, and it
+      scales with traffic exactly like production does.
+    caught_by: [AAC-0014, AAC-0104]
+
+  - id: AACP-0011
+    name: Unevaluated cheap route
+    status: active
+    since: "0.4.0"
+    archetypes: [A1, A2, A3, A4, A5, A6, A7, A8, A10]
+    symptom: >-
+      Quality complaints that cannot be reproduced, clustering around periods of
+      high load or provider degradation.
+    mechanism: >-
+      A cheaper or fallback model is reachable but was never run against the
+      golden set. It serves only under conditions that offline evaluation never
+      recreates — incident, rate limit, cost ceiling — so its quality is unknown
+      precisely when it matters most.
+    caught_by: [AAC-0098, AAC-0099, AAC-0100]
+
+  - id: AACP-0012
+    name: Cost per call, not per task
+    status: active
+    since: "0.4.0"
+    archetypes: [A2, A3, A4, A5, A6, A7, A8, A9]
+    symptom: >-
+      Unit cost falls release over release while total spend rises. Optimisation
+      work shows gains that never appear on the invoice.
+    mechanism: >-
+      The denominator is calls rather than completed tasks, so any change that
+      splits work into more, smaller calls improves the metric while making the
+      system more expensive. Chain and agent refactors do this routinely and are
+      rewarded for it.
+    caught_by: [AAC-0008, AAC-0050]

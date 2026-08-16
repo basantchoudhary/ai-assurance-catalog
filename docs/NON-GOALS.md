@@ -53,6 +53,33 @@ An adapter for an eval library makes that library more valuable and makes this
 project visibly dependent on it. That is the intended relationship, and it is
 why adapters — not features — are the growth strategy.
 
+## The one deliberate exception: patterns
+
+`patterns/` catalogues known anti-patterns, and a pattern catalogue is a
+taxonomy — which the rule above forbids. This is a considered exception, not an
+oversight, and it is bounded by three conditions:
+
+1. **No incumbent owns the ground.** OWASP LLM10 is *Unbounded Consumption*, a
+   security framing rather than an economic one. Nobody publishes operational
+   cost or agent-trajectory anti-patterns for LLM systems. Where an incumbent
+   *does* own the ground — injection, poisoning, excessive agency — patterns
+   cite the case and the crosswalk carries the external reference. Patterns
+   never restate a threat.
+2. **Explicitly non-normative**, outside `catalog/`, in a separate identifier
+   namespace, versioned separately. A pattern can never be claimed as
+   conformance.
+3. **Every pattern terminates in a case identifier or declares a gap.** The
+   schema requires it and the linter reports gaps prominently. A pattern cannot
+   exist as free-floating commentary.
+
+Condition 3 is what makes the exception strengthen the discipline rather than
+erode it: `patterns/` is coverage validation pointed back at the catalog. A
+pattern nobody can catch is a finding against `catalog/`.
+
+If any of the three conditions stops holding — an incumbent publishes this
+taxonomy, or patterns start accumulating without case references — the
+directory should be removed and the content contributed upstream instead.
+
 ## Scope of the obligations themselves
 
 Cases describe **application-level** obligations: properties of a system built

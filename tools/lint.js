@@ -112,12 +112,50 @@ if (fs.existsSync(cwDir)) {
   }
 }
 
+/*
+ * Patterns are informative, but they are held to one hard rule: a pattern must
+ * terminate in a case identifier or declare itself a gap. That is what makes
+ * patterns/ coverage validation for the catalog rather than free commentary.
+ */
+const patternSchema = JSON.parse(fs.readFileSync(path.join(ROOT, "schema/pattern.schema.json"), "utf8"));
+const validatePattern = ajv.compile(patternSchema);
+const patterns = new Map();
+const gaps = [];
+const patDir = path.join(ROOT, "patterns");
+
+if (fs.existsSync(patDir)) {
+  for (const f of fs.readdirSync(patDir).filter((x) => x.endsWith(".yaml")).sort()) {
+    const rel = `patterns/${f}`;
+    const doc = yaml.load(fs.readFileSync(path.join(patDir, f), "utf8"));
+    if (!validatePattern(doc)) {
+      for (const e of validatePattern.errors) err(rel, `schema ${e.instancePath || "/"} ${e.message}`);
+      continue;
+    }
+    for (const p of doc.patterns) {
+      if (patterns.has(p.id)) err(rel, `duplicate pattern id ${p.id}`);
+      patterns.set(p.id, { ...p, _file: rel });
+      for (const a of p.archetypes) if (!ARCH_IDS.has(a)) err(rel, `${p.id} unknown archetype "${a}"`);
+      for (const c of p.caught_by) if (!byId.has(c)) err(rel, `${p.id} caught_by references unknown ${c}`);
+      if (!p.caught_by.length) gaps.push({ id: p.id, name: p.name, file: rel });
+    }
+  }
+  const pnums = [...patterns.keys()].map((id) => parseInt(id.slice(5), 10)).sort((a, b) => a - b);
+  pnums.forEach((n, i) => {
+    if (n !== i + 1) err("patterns", `id sequence breaks at AACP-${String(n).padStart(4, "0")} (expected ${i + 1})`);
+  });
+}
+
 // ---- report ----
 const gates = [...byId.values()].filter((d) => d.gate).length;
 const musts = [...byId.values()].filter((d) => d.level === "MUST").length;
 const core = [...byId.values()].filter((d) => d.core).length;
 
 console.log(`catalog: ${byId.size} cases  (${core} core, ${musts} MUST, ${gates} gates)`);
+if (patterns.size) {
+  console.log(`patterns: ${patterns.size} informative`);
+  // Surfaced, never silent: an uncaught pattern is a hole in the catalog.
+  for (const g of gaps) console.log(`  GAP   ${g.id} "${g.name}" — no obligation catches this (${g.file})`);
+}
 for (const w of warnings) console.log(`  warn  ${w}`);
 if (errors.length) {
   for (const e of errors) console.error(`  ERROR ${e}`);

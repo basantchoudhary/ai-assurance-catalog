@@ -1,0 +1,64 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/pattern.schema.json",
+  "title": "AACP Pattern file",
+  "description": "A file of known anti-patterns. INFORMATIVE — patterns are diagnoses, not obligations, and nothing here is required for conformance. A pattern's job is to answer 'why does this obligation exist?' so the obligation itself can stay short, and to act as coverage validation: a pattern that no case catches is a hole in the catalog.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domain", "version", "patterns"],
+  "properties": {
+    "domain": { "type": "string", "description": "Grouping tag for this file. Presentational only — identifiers are flat across all domains." },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "patterns": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "status", "since", "symptom", "mechanism", "archetypes", "caught_by"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^AACP-[0-9]{4}$",
+            "description": "Flat and permanent, in a namespace separate from AAC cases. Domain is metadata, not identity — the same lesson the catalog learned about archetypes."
+          },
+          "name": { "type": "string", "minLength": 4, "maxLength": 80 },
+          "status": { "enum": ["active", "deprecated"] },
+          "since": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+          "symptom": {
+            "type": "string",
+            "minLength": 30,
+            "description": "What an operator observes. Written so someone can recognise it in their own system without already knowing the cause."
+          },
+          "mechanism": {
+            "type": "string",
+            "minLength": 30,
+            "description": "Why it happens. The causal story that makes the obligation make sense."
+          },
+          "archetypes": {
+            "type": "array",
+            "minItems": 1,
+            "items": { "type": "string", "pattern": "^A([1-9]|10)$" }
+          },
+          "caught_by": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^AAC-[0-9]{4}$" },
+            "description": "Obligations that would surface this pattern. MAY be empty, but only with gap_note — an empty list is a claim that the catalog does not cover this, which is a finding rather than an omission."
+          },
+          "gap_note": {
+            "type": "string",
+            "minLength": 30,
+            "description": "Required when caught_by is empty. States what obligation is missing and why it has not been written yet."
+          }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "caught_by": { "maxItems": 0 } }, "required": ["caught_by"] },
+            "then": { "required": ["gap_note"] }
+          }
+        ]
+      }
+    }
+  }
+}

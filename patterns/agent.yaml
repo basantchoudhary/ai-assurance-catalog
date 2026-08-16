@@ -1,0 +1,96 @@
+# INFORMATIVE. Patterns are diagnoses, not obligations. Nothing here is required
+# for conformance — see patterns/README.md.
+
+domain: agent
+version: "0.4.0"
+
+patterns:
+  - id: AACP-0013
+    name: Prompt-only guardrails
+    status: active
+    since: "0.4.0"
+    archetypes: [A6, A7, A9]
+    symptom: >-
+      Limits hold in testing and fail under unusual inputs. Post-incident review
+      finds the constraint was documented and never enforced.
+    mechanism: >-
+      Step budgets, tool restrictions and approval requirements are written into
+      the system prompt rather than implemented in the harness. They work
+      whenever the model cooperates, which is most of the time, so the gap only
+      appears under the adversarial or degenerate conditions that make it
+      matter.
+    caught_by: [AAC-0055, AAC-0056, AAC-0057]
+
+  - id: AACP-0014
+    name: Tool-error ping-pong
+    status: active
+    since: "0.4.0"
+    archetypes: [A6, A7]
+    symptom: >-
+      Runs that terminate on step budget rather than completion, with a trace
+      full of near-identical calls.
+    mechanism: >-
+      A tool returns an error the model cannot act on, so it reformulates
+      trivially and retries. Nothing distinguishes progress from repetition, so
+      the loop continues until an external limit stops it — and if that limit
+      is generous, the run is expensive as well as useless.
+    caught_by: [AAC-0053, AAC-0055, AAC-0054]
+
+  - id: AACP-0015
+    name: Instructions arriving through tool output
+    status: active
+    since: "0.4.0"
+    archetypes: [A3, A6, A7, A9]
+    symptom: >-
+      The agent takes an action nobody requested, traceable to content returned
+      by a tool or retrieved document rather than to user input.
+    mechanism: >-
+      Tool results and retrieved text enter the context window with the same
+      standing as instructions. Input-side defences inspect what the user sent
+      and never see this channel, which is why it survives systems that test
+      prompt injection thoroughly at the front door.
+    caught_by: [AAC-0058, AAC-0036, AAC-0004]
+
+  - id: AACP-0016
+    name: Context lost at handoff
+    status: active
+    since: "0.4.0"
+    archetypes: [A7]
+    symptom: >-
+      A sub-agent produces confident, well-formed work that answers a subtly
+      different question. No error appears anywhere in the trace.
+    mechanism: >-
+      The handoff payload carries the task but not the constraints, prior
+      findings or user qualifications that shaped it. The receiver has no way to
+      know something is missing, so it fills the gap plausibly and the failure
+      is silent by construction.
+    caught_by: [AAC-0062, AAC-0061]
+
+  - id: AACP-0017
+    name: Supervisor ping-pong
+    status: active
+    since: "0.4.0"
+    archetypes: [A7]
+    symptom: >-
+      Cost and latency spike on a minority of requests; the trace shows the same
+      task handed between two agents repeatedly.
+    mechanism: >-
+      Neither agent will claim a task that sits on their boundary, and each
+      delegation looks locally reasonable. Without a global handoff counter
+      nothing detects the cycle, because every individual decision is defensible.
+    caught_by: [AAC-0063, AAC-0064]
+
+  - id: AACP-0018
+    name: Trajectory judged only by its answer
+    status: active
+    since: "0.4.0"
+    archetypes: [A6, A7]
+    symptom: >-
+      Quality metrics are strong while cost and latency drift upward with no
+      identified cause.
+    mechanism: >-
+      Evaluation scores the final output and ignores the path. An agent that
+      wanders, re-reads and self-corrects reaches the same answer and passes
+      every check, so the regression is invisible to output-only scoring and
+      accumulates release after release.
+    caught_by: [AAC-0054, AAC-0060, AAC-0100]

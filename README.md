@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.3.0** — identifiers are stable from the first tagged
+Status: **working draft 0.4.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -89,6 +89,7 @@ deprecation rules.
 catalog/        105 cases, one YAML file each — the normative master
 taxonomy/       archetypes, mechanisms, stages, dimensions, levels
 schema/         JSON Schema for a case
+patterns/       informative anti-patterns mapping into the cases that catch them
 crosswalks/     mappings to OWASP, NIST AI RMF, ISO 42001, EU AI Act
 tools/          linter and renderer — format only, never evaluation
 docs/           identifier, versioning and scope policy
