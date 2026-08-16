@@ -1,0 +1,35 @@
+# AAC-0041 — Memory writes are correct and poison-resistant
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0041
+legacy_id: A4-05
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: state
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A4
+core: false
+
+title: |-
+  Memory writes are correct and poison-resistant
+
+statement: |-
+  What gets persisted to long-term memory is asserted, and adversarial turns attempting to write false durable facts are tested. A poisoned memory is a bug that survives every subsequent session.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M7
+stages:
+  - S3
+tool_class: |-
+  Test runner + red-team
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

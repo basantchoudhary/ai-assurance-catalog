@@ -1,0 +1,34 @@
+# AAC-0035 — Conflicting and stale sources
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0035
+legacy_id: A3-08
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: correctness
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A3
+core: false
+
+title: |-
+  Conflicting and stale sources
+
+statement: |-
+  Where the corpus contains contradictory or superseded documents, the expected behaviour — surface the conflict, prefer the newest, refuse — is defined and tested.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M3
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

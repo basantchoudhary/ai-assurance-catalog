@@ -1,0 +1,35 @@
+# AAC-0061 — Delegation routes to the right agent
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0061
+legacy_id: A7-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A7
+core: false
+
+title: |-
+  Delegation routes to the right agent
+
+statement: |-
+  The supervisor's routing decisions are scored against expected assignments, including cases where a task should not be delegated at all.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

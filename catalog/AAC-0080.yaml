@@ -1,0 +1,35 @@
+# AAC-0080 — Every action is reconstructable after the fact
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0080
+legacy_id: A9-05
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: observability
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A9
+core: false
+
+title: |-
+  Every action is reconstructable after the fact
+
+statement: |-
+  A complete audit trail — inputs, decisions, tool calls, outputs, timestamps, identities — sufficient to explain any single action weeks later without the model in the loop.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+stages:
+  - S2
+  - S5
+tool_class: |-
+  Tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

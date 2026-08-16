@@ -1,0 +1,36 @@
+# AAC-0050 — End-to-end budget as the sum of its parts
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0050
+legacy_id: A5-07
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: cost
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A5
+core: false
+
+title: |-
+  End-to-end budget as the sum of its parts
+
+statement: |-
+  Total latency and cost budgeted across the whole graph and attributed per node, so a regression can be localised rather than merely observed.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M5
+stages:
+  - S3
+  - S5
+tool_class: |-
+  Tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

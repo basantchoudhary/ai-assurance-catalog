@@ -1,0 +1,34 @@
+# AAC-0073 — Runtime cost of the generated artifact
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0073
+legacy_id: A8-06
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: cost
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A8
+core: false
+
+title: |-
+  Runtime cost of the generated artifact
+
+statement: |-
+  For queries and jobs, the cost of executing what was produced — rows scanned, partitions read, compute time. A correct query that scans the whole table is a production incident.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

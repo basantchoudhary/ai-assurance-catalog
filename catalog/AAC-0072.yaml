@@ -1,0 +1,36 @@
+# AAC-0072 — Execution is sandboxed and blast radius bounded
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0072
+legacy_id: A8-05
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: safety
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A8
+core: false
+
+title: |-
+  Execution is sandboxed and blast radius bounded
+
+statement: |-
+  Generated artifacts never run with production credentials or unbounded filesystem and network access. Verified by attempting escape, not by reading the config.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M7
+  - M1
+stages:
+  - S2
+  - S4
+tool_class: |-
+  Red-team harness
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

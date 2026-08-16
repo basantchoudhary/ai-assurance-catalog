@@ -1,0 +1,119 @@
+# The realization axes: how an obligation is physically discharged.
+#
+# These are kept orthogonal on purpose. The same obligation — "output must not
+# leak PII" — is a deterministic detector in CI, a blocking gateway filter at
+# runtime, and a sampled model-graded check in production. One statement, three
+# realizations, different machinery. A catalog that fused them would force a
+# vendor choice before the architect had finished thinking.
+#
+# Tool classes name a CLASS, never a product. See docs/NON-GOALS.md.
+
+version: "0.1.0"
+
+mechanisms:
+  - id: M1
+    name: Deterministic assertion
+    summary: >-
+      Exact match, regex, JSON-schema validation, parser or compiler exit code.
+      Cheap, fast, zero ambiguity. Cannot judge quality — only conformance.
+  - id: M2
+    name: Programmatic metric
+    summary: >-
+      Field-level F1, recall@k, p95 latency, cost per successful task. Needs
+      labelled data or instrumentation; yields a number you can trend and
+      threshold.
+  - id: M3
+    name: Model-graded, reference-free
+    summary: >-
+      A model scores the output against a written rubric. The only practical
+      mechanism for open-ended quality, and it must itself be validated —
+      every A10 obligation applies to your judge.
+  - id: M4
+    name: Model-graded, reference-based
+    summary: >-
+      Compare against a gold answer, or pairwise against the previous release.
+      More stable than M3 because the judge has an anchor. Requires curated
+      references.
+  - id: M5
+    name: Trace assertion
+    summary: >-
+      Assert over emitted spans: structure, ordering, attribute presence, step
+      count, token totals. The only way to test HOW a system reached an answer
+      rather than what it said.
+  - id: M6
+    name: Human review
+    summary: >-
+      Annotation queue or SME sign-off. Ground truth for everything else; the
+      labels it produces are what validate M3 and M4. Does not scale, so spend
+      it on calibration.
+  - id: M7
+    name: Adversarial suite
+    summary: >-
+      Generated attacks, input mutation, fault injection, fuzzing. Coverage
+      grows over time; every production incident should become a new case here.
+
+stages:
+  - id: S1
+    name: Dev loop
+    summary: Run by hand while iterating. Seconds. Nobody but the author sees a failure.
+  - id: S2
+    name: CI, pre-merge
+    summary: >-
+      Every change to prompt, schema, tool definition or model pin. Minutes,
+      cheap and deterministic — mock the model where the test is about plumbing.
+  - id: S3
+    name: Pre-release eval
+    summary: >-
+      Full offline dataset against the release candidate. Real model calls, real
+      cost. This is where release gates live.
+  - id: S4
+    name: Runtime gateway
+    summary: >-
+      Inline on the live request path, blocking. A failure is seen by the end
+      user as a refusal, redaction or fallback.
+  - id: S5
+    name: Production online eval
+    summary: >-
+      Asynchronous scoring of sampled live traces. Raises an alert, never
+      blocks. The only stage that sees your real input distribution.
+  - id: S6
+    name: Scheduled regression
+    summary: >-
+      Periodic re-run of frozen cases to catch provider-side model drift and
+      corpus staleness. Nothing changed on your side — that is the point.
+
+# Dimensions are the quality attribute under test. Used for filtering and for
+# the coverage matrix; not part of the identity of a case.
+dimensions:
+  - correctness
+  - grounding
+  - format
+  - instruction
+  - robustness
+  - state
+  - tool-use
+  - trajectory
+  - security
+  - safety
+  - privacy
+  - reliability
+  - determinism
+  - cost
+  - latency
+  - observability
+  - drift
+  - oversight
+
+levels:
+  - id: MUST
+    summary: >-
+      Inherent to the shape. A system without it cannot claim conformance.
+      Skipping requires a recorded accepted risk with a named owner.
+  - id: SHOULD
+    summary: >-
+      Expected in production systems. Valid reasons to omit exist and must be
+      stated in the risk register.
+  - id: MAY
+    summary: >-
+      Applies when the stated condition holds — regulated domain, high blast
+      radius, external users.

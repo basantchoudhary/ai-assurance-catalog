@@ -1,0 +1,35 @@
+# AAC-0064 — A budget ceiling spans the whole system
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0064
+legacy_id: A7-04
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: cost
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A7
+core: false
+
+title: |-
+  A budget ceiling spans the whole system
+
+statement: |-
+  Token, step and currency limits apply to the system as a whole, not per agent. Ten agents each within budget is not a system within budget.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M5
+stages:
+  - S4
+tool_class: |-
+  AI gateway
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

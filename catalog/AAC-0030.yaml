@@ -1,0 +1,35 @@
+# AAC-0030 — Citations resolve and actually support the sentence
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0030
+legacy_id: A3-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: grounding
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A3
+core: false
+
+title: |-
+  Citations resolve and actually support the sentence
+
+statement: |-
+  Each citation points to a real retrieved chunk, and that chunk supports the specific claim attached to it. Resolvability is M1; support is M3. Both are needed.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M3
+stages:
+  - S3
+tool_class: |-
+  Test runner + eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

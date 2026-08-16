@@ -1,0 +1,35 @@
+# AAC-0081 — Actions can be rolled back
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0081
+legacy_id: A9-06
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: safety
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A9
+core: false
+
+title: |-
+  Actions can be rolled back
+
+statement: |-
+  An undo or compensating path exists for each side-effecting action and is tested, not assumed. Write down anything genuinely irreversible and gate it under A9-03.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+stages:
+  - S2
+  - S3
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

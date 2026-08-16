@@ -1,0 +1,43 @@
+# AAC-0010 — Variance across repeated runs is bounded
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0010
+legacy_id: C-10
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: determinism
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Variance across repeated runs is bounded
+
+statement: |-
+  The same input is run N times and the spread of outcomes measured. You cannot interpret a regression signal without knowing your own noise floor.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

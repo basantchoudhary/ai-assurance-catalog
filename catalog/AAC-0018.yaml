@@ -1,0 +1,35 @@
+# AAC-0018 — Stability under paraphrase and reordering
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0018
+legacy_id: A1-02
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: robustness
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+core: false
+
+title: |-
+  Stability under paraphrase and reordering
+
+statement: |-
+  Semantically equivalent rewrites of the same input, and reordered list items, produce equivalent outputs. Sensitivity here predicts production noise better than any single accuracy number.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M4
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

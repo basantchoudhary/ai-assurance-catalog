@@ -1,0 +1,36 @@
+# AAC-0079 — Failure is loud, and so is silence
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0079
+legacy_id: A9-04
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: reliability
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A9
+core: false
+
+title: |-
+  Failure is loud, and so is silence
+
+statement: |-
+  Errors alert a human, and a run that never completes is detected by a dead-man's switch. Nobody is watching in real time — that is the definition of this archetype.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+  - M1
+stages:
+  - S2
+  - S5
+tool_class: |-
+  Tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

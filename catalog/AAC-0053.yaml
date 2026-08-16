@@ -1,0 +1,35 @@
+# AAC-0053 — Recovery from tool errors and empty results
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0053
+legacy_id: A6-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: tool-use
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A6
+core: false
+
+title: |-
+  Recovery from tool errors and empty results
+
+statement: |-
+  Tools are made to return errors, timeouts, empty sets and malformed payloads. The agent must adapt or stop, never retry the identical call indefinitely.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M7
+  - M5
+stages:
+  - S3
+tool_class: |-
+  Red-team harness + trace assertion
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

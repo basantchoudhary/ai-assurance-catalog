@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/case.schema.json",
+  "title": "AAC Case",
+  "description": "One test obligation. The normative unit of the AI Assurance Catalog. A case states WHAT must be true, tags WHICH archetypes owe it, and names the CLASS of machinery that can discharge it. A case never names a product, never defines a metric formula, and never sets a threshold.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "status", "since", "level", "dimension", "gate",
+    "archetypes", "core", "title", "statement", "mechanisms", "stages", "tool_class"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^AAC-[0-9]{4}$",
+      "description": "Flat, permanent, never reused. Archetype is metadata, not identity — see docs/ID-POLICY.md."
+    },
+    "legacy_id": {
+      "type": "string",
+      "description": "Archetype-scoped identifier from draft 0.1 (e.g. A6-01). Retained for traceability only; never cite it in new work."
+    },
+    "status": {
+      "enum": ["active", "deprecated", "superseded"],
+      "description": "Deprecated and superseded cases stay in the catalog forever so citations keep resolving."
+    },
+    "since": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Catalog version in which this case first appeared."
+    },
+    "deprecated_in": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$" },
+    "superseded_by": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^AAC-[0-9]{4}$" },
+      "description": "Required when status is 'superseded'."
+    },
+    "level": {
+      "enum": ["MUST", "SHOULD", "MAY"],
+      "description": "Obligation strength, RFC 2119 usage, binding only within an adopting organisation."
+    },
+    "dimension": {
+      "type": "string",
+      "description": "Quality attribute under test. Must appear in taxonomy/realization.yaml#dimensions."
+    },
+    "gate": {
+      "type": "boolean",
+      "description": "True if failure blocks a release or a request. False means it raises a signal only. This is a property of the obligation, not of any particular deployment — an adopter may still choose to downgrade it in their profile."
+    },
+    "archetypes": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^A([1-9]|10)$" },
+      "description": "Tags, not a tree. Core cases enumerate every archetype explicitly so a consumer never has to resolve inheritance."
+    },
+    "core": {
+      "type": "boolean",
+      "description": "True if owed by every AI application regardless of shape. Presentational: core cases already list all archetypes."
+    },
+    "title": { "type": "string", "minLength": 8, "maxLength": 120 },
+    "statement": {
+      "type": "string",
+      "minLength": 40,
+      "description": "The obligation in plain English. States what must be true and why it matters. Contains no product names, no thresholds, no metric formulas."
+    },
+    "mechanisms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^M[1-7]$" },
+      "description": "Advisory. Which classes of machinery can produce a verdict for this obligation."
+    },
+    "stages": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^S[1-6]$" },
+      "description": "Advisory. Where in the lifecycle this can run."
+    },
+    "tool_class": {
+      "type": "string",
+      "description": "Advisory. A CLASS of tool, never a product name. Products belong in realization examples, which are informative and versioned separately."
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "status": { "const": "superseded" } }, "required": ["status"] },
+      "then": { "required": ["superseded_by"] }
+    },
+    {
+      "if": { "properties": { "status": { "enum": ["deprecated", "superseded"] } }, "required": ["status"] },
+      "then": { "required": ["deprecated_in"] }
+    }
+  ]
+}

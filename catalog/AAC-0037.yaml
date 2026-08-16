@@ -1,0 +1,34 @@
+# AAC-0037 — Goal completion across a full conversation
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0037
+legacy_id: A4-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A4
+core: false
+
+title: |-
+  Goal completion across a full conversation
+
+statement: |-
+  Multi-turn scenarios are run end to end with a simulated user, scored on whether the user's goal was met — not on per-turn plausibility.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M3
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

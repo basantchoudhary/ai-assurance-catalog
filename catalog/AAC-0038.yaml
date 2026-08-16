@@ -1,0 +1,35 @@
+# AAC-0038 — State retention and self-consistency
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0038
+legacy_id: A4-02
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: state
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A4
+core: false
+
+title: |-
+  State retention and self-consistency
+
+statement: |-
+  Facts established in early turns are still honoured late in the conversation, and the assistant never contradicts something it previously asserted.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M3
+  - M4
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

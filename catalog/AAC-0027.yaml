@@ -1,0 +1,34 @@
+# AAC-0027 — The downstream consumer is tested on real output
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0027
+legacy_id: A2-06
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: reliability
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A2
+core: false
+
+title: |-
+  The downstream consumer is tested on real output
+
+statement: |-
+  The code that eats the structured output is exercised against a corpus of actual model responses, including the malformed ones. Schema-valid and consumer-safe are different properties.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+stages:
+  - S2
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

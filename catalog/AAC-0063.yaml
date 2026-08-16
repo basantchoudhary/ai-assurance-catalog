@@ -1,0 +1,36 @@
+# AAC-0063 — No loops or ping-pong between agents
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0063
+legacy_id: A7-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: trajectory
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A7
+core: false
+
+title: |-
+  No loops or ping-pong between agents
+
+statement: |-
+  Repeated handoffs of the same task are detected and terminated by the harness, with the condition asserted in tests rather than discovered in a bill.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+  - M1
+stages:
+  - S2
+  - S4
+tool_class: |-
+  Test runner + gateway
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

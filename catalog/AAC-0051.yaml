@@ -1,0 +1,35 @@
+# AAC-0051 — Tool selection accuracy, including no-tool
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0051
+legacy_id: A6-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: tool-use
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A6
+core: false
+
+title: |-
+  Tool selection accuracy, including no-tool
+
+statement: |-
+  Given an intent, the correct tool is chosen — and cases where no tool should be called are included. Unnecessary tool calls are the most common and least noticed A6 defect.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform + trace assertion
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

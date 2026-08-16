@@ -1,0 +1,34 @@
+# AAC-0019 — Context-window overflow behaviour
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0019
+legacy_id: A1-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: robustness
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+core: false
+
+title: |-
+  Context-window overflow behaviour
+
+statement: |-
+  Input at and beyond the limit is handled by a tested strategy — chunk, truncate with notice, or reject. Never a silent drop of the tail, which produces a confident answer about half the document.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+stages:
+  - S2
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

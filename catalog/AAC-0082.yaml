@@ -1,0 +1,35 @@
+# AAC-0082 — Behaviour on unchanged inputs is watched over time
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0082
+legacy_id: A9-07
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: drift
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A9
+core: false
+
+title: |-
+  Behaviour on unchanged inputs is watched over time
+
+statement: |-
+  The same scheduled inputs re-run periodically to detect drift from provider model updates, corpus changes or environment shifts. Unattended systems drift unnoticed by construction.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M4
+stages:
+  - S6
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

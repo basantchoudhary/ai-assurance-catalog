@@ -1,0 +1,35 @@
+# AAC-0083 — Blast radius rehearsed in staging
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0083
+legacy_id: A9-08
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: safety
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A9
+core: false
+
+title: |-
+  Blast radius rehearsed in staging
+
+statement: |-
+  Full runs against production-shaped data in an isolated environment before any capability expansion reaches production.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M7
+  - M6
+stages:
+  - S3
+tool_class: |-
+  Red-team harness
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

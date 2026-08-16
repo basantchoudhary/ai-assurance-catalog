@@ -1,0 +1,34 @@
+# AAC-0039 — Correction and topic-switch handling
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0039
+legacy_id: A4-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: state
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A4
+core: false
+
+title: |-
+  Correction and topic-switch handling
+
+statement: |-
+  Scenarios where the user changes their mind, corrects a misunderstanding, or switches topic and returns. Stale state surviving a correction is the classic multi-turn defect.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M3
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

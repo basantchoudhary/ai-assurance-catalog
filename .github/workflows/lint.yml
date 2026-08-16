@@ -1,0 +1,30 @@
+name: catalog
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm install --no-fund --no-audit
+
+      # Schema, identifier permanence, and the no-product-names discipline.
+      - run: npm run lint
+
+      # The site is a build artifact. If a rebuild produces a diff, someone
+      # edited generated output instead of the catalog it comes from.
+      - name: site/ is in sync with catalog/
+        run: |
+          npm run render
+          if ! git diff --quiet -- site/; then
+            echo "::error::site/ is stale or was hand-edited. Run 'npm run build' and commit."
+            git diff --stat -- site/
+            exit 1
+          fi

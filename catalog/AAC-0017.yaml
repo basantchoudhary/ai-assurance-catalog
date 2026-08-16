@@ -1,0 +1,34 @@
+# AAC-0017 — Per-slice accuracy, not just aggregate
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0017
+legacy_id: A1-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+core: false
+
+title: |-
+  Per-slice accuracy, not just aggregate
+
+statement: |-
+  Accuracy reported per class and per meaningful input segment — length band, domain, language, source channel. A confusion matrix, where the task is classification.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

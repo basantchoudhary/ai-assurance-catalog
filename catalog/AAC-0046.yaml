@@ -1,0 +1,35 @@
+# AAC-0046 — Partial failure and compensating actions
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0046
+legacy_id: A5-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: reliability
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A5
+core: false
+
+title: |-
+  Partial failure and compensating actions
+
+statement: |-
+  A node failing mid-graph triggers the defined behaviour — retry, skip, compensate, or abort cleanly. Tested by fault injection at every node, not just the first.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M7
+  - M1
+stages:
+  - S2
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

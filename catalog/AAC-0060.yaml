@@ -1,0 +1,35 @@
+# AAC-0060 — The full trajectory is reconstructable from the trace
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0060
+legacy_id: A6-10
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: observability
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A6
+core: false
+
+title: |-
+  The full trajectory is reconstructable from the trace
+
+statement: |-
+  Every step — thought, tool call, arguments, result, token cost — appears as a span with parent-child structure intact. Without this, none of A6-01 through A6-05 can be evaluated at all.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+stages:
+  - S2
+  - S5
+tool_class: |-
+  Tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

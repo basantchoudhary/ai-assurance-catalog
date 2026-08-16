@@ -1,0 +1,34 @@
+# AAC-0028 — Retrieval quality measured on its own
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0028
+legacy_id: A3-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A3
+core: false
+
+title: |-
+  Retrieval quality measured on its own
+
+statement: |-
+  Recall@k and MRR against gold question-to-document pairs, evaluated without the generator in the loop. Most reported RAG quality failures are retrieval failures wearing a generation costume.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

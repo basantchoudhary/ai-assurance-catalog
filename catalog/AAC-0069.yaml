@@ -1,0 +1,35 @@
+# AAC-0069 — It executes in a sandbox without error
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0069
+legacy_id: A8-02
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A8
+core: false
+
+title: |-
+  It executes in a sandbox without error
+
+statement: |-
+  The artifact runs against representative inputs in an isolated environment. Execution is the strongest correctness signal available anywhere in this catalog — use it wherever the shape allows.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+stages:
+  - S2
+  - S3
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

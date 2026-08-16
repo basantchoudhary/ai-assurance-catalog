@@ -1,0 +1,35 @@
+# AAC-0062 — Handoff payloads are complete
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0062
+legacy_id: A7-02
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: state
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A7
+core: false
+
+title: |-
+  Handoff payloads are complete
+
+statement: |-
+  Context transferred at an agent boundary contains everything the receiver needs. Silent context loss at handoff produces confidently wrong work with no error anywhere in the trace.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+  - M3
+stages:
+  - S3
+tool_class: |-
+  Trace assertion
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

@@ -1,0 +1,34 @@
+# AAC-0068 — The artifact parses or compiles
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0068
+legacy_id: A8-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: format
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A8
+core: false
+
+title: |-
+  The artifact parses or compiles
+
+statement: |-
+  Generated code, SQL, config or markup is fed to a real parser or compiler. Free, fast, and it catches a surprising share of failures before anything expensive runs.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+stages:
+  - S2
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

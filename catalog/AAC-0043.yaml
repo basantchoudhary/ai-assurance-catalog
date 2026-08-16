@@ -1,0 +1,35 @@
+# AAC-0043 — Escalation to a human works under load
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0043
+legacy_id: A4-07
+status: active
+since: "0.1.0"
+
+level: MAY
+dimension: oversight
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A4
+core: false
+
+title: |-
+  Escalation to a human works under load
+
+statement: |-
+  Where a human handoff exists, the trigger conditions and the completeness of the transferred context are tested. Applies wherever a human is the fallback.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M6
+stages:
+  - S3
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

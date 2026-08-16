@@ -1,0 +1,35 @@
+# AAC-0084 — Agreement with human labels
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0084
+legacy_id: A10-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A10
+core: false
+
+title: |-
+  Agreement with human labels
+
+statement: |-
+  The classifier or judge is scored against a human-labelled set using an agreement statistic, not raw accuracy. An unvalidated judge makes every metric built on it decorative.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M6
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Annotation tool + eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

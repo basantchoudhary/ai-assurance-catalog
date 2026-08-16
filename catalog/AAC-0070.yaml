@@ -1,0 +1,35 @@
+# AAC-0070 — It passes a functional test suite
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0070
+legacy_id: A8-03
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A8
+core: false
+
+title: |-
+  It passes a functional test suite
+
+statement: |-
+  Behaviour is verified against tests written independently of the generation, reported as a pass rate. Runs, and does the right thing, are different claims.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Test runner + eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

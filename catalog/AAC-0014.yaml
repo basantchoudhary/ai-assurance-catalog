@@ -1,0 +1,44 @@
+# AAC-0014 — Continuous scoring of sampled production traffic
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0014
+legacy_id: C-14
+status: active
+since: "0.1.0"
+
+level: SHOULD
+dimension: correctness
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Continuous scoring of sampled production traffic
+
+statement: |-
+  A sample of live traces is scored on the same rubrics as offline, with alerting on threshold breach. This is the only stage that sees your real input distribution.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M3
+  - M2
+stages:
+  - S5
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

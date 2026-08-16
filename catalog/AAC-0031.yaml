@@ -1,0 +1,35 @@
+# AAC-0031 — Abstention when the corpus cannot answer
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0031
+legacy_id: A3-04
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: grounding
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A3
+core: false
+
+title: |-
+  Abstention when the corpus cannot answer
+
+statement: |-
+  Questions with no supporting document must produce an explicit refusal. Build this set deliberately — it will not occur naturally in a dataset curated from answerable questions.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M3
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

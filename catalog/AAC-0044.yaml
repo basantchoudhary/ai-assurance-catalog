@@ -1,0 +1,36 @@
+# AAC-0044 — Each node is tested in isolation
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0044
+legacy_id: A5-01
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A5
+core: false
+
+title: |-
+  Each node is tested in isolation
+
+statement: |-
+  Every LLM node has its own case set against its own contract. A node tested only through the full pipeline cannot be debugged when the pipeline degrades.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M2
+stages:
+  - S2
+  - S3
+tool_class: |-
+  Test runner + eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

@@ -1,0 +1,35 @@
+# AAC-0085 — Known judge biases are probed
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0085
+legacy_id: A10-02
+status: active
+since: "0.1.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A10
+core: false
+
+title: |-
+  Known judge biases are probed
+
+statement: |-
+  Position, verbosity, formatting and self-preference bias tested by permuting inputs — swapping candidate order, padding length, changing markdown. These are documented, reproducible failure modes of model-graded evaluation.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M7
+  - M2
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.
