@@ -98,4 +98,7 @@ query — are **informative** and version separately from the catalog. They are
 expected to reference real products and to go stale. Nothing in `catalog/` may
 depend on them.
 
-They arrive with the Phase 3 adapters; see [../README.md](../README.md).
+They live in [../realizations/](../realizations/) — currently the 32 core
+obligations with 88 concrete options across six approaches. That directory is
+the only place in the project where a product may be named, and it carries a
+`checked` date because it is expected to go stale.

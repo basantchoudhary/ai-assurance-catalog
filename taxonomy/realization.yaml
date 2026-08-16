@@ -82,6 +82,46 @@ stages:
       Periodic re-run of frozen cases to catch provider-side model drift and
       corpus staleness. Nothing changed on your side — that is the point.
 
+# WHO provides the machinery. Orthogonal to mechanism (what computes the
+# verdict) and stage (when it runs) — the same mechanism is available from
+# several of these, at very different cost and with very different lock-in.
+approaches:
+  - id: in-house
+    name: Write it yourself
+    summary: >-
+      A test, a wrapper, a script in your own repository. Most control, most
+      portable, most work. Usually the strongest evidence, because it asserts
+      exactly what you meant rather than what a product happens to measure.
+  - id: open-source
+    name: Open-source library
+    summary: >-
+      A library you run yourself. No vendor dependency and no data leaves your
+      environment; you own the upgrade treadmill and the scaling.
+  - id: platform
+    name: Hosted eval or observability platform
+    summary: >-
+      Datasets, experiments, scorers and traces as a service. Fastest to useful,
+      and the place where a growing share of your evidence ends up living — so
+      the export path matters more than it looks on day one.
+  - id: gateway
+    name: AI gateway or proxy
+    summary: >-
+      Enforcement on the request path: routing, quota, redaction, guardrail
+      hooks, budget ceilings. The only approach that can PREVENT rather than
+      detect, and the only one that covers calls your application code forgot
+      to route through the wrapper.
+  - id: cloud-native
+    name: Cloud provider managed service
+    summary: >-
+      Content safety, PII detection, model registries, IAM restrictions from the
+      cloud you already run in. Low integration cost and procurement is usually
+      already done; opaque internals and hard to reproduce in CI.
+  - id: human
+    name: Human process
+    summary: >-
+      Annotation queues, review samples, sign-off. Does not scale, and is the
+      ground truth every model-graded mechanism is calibrated against.
+
 # Dimensions are the quality attribute under test. Used for filtering and for
 # the coverage matrix; not part of the identity of a case.
 dimensions:

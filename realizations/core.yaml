@@ -1,0 +1,524 @@
+# How the core obligations get built, concretely.
+#
+# INFORMATIVE, and the ONLY layer where products may be named. Versioned
+# separately from catalog/ precisely because it will go stale: products appear,
+# disappear and change what they do far faster than an obligation does.
+#
+# Nothing here is a recommendation or an endorsement. Options are listed so a
+# reader can see that an obligation is reachable several ways at very different
+# cost — not so they can be told which to pick.
+#
+# VERIFY BEFORE RELYING ON ANY PRODUCT CLAIM. Entries describe the kind of
+# capability a category of product typically offers, checked against
+# documentation at the date below. Specific feature availability, naming and
+# pricing change without notice.
+
+layer: realization
+status: informative
+version: "0.10.0"
+checked: "2026-08"
+
+cases:
+
+  # ---------------------------------------------------------------- quality --
+  AAC-0001:  # Task accuracy on a frozen golden set
+    options:
+      - approach: platform
+        mechanism: M4
+        tools: [LangSmith, Langfuse, Braintrust, Arize Phoenix, W&B Weave]
+        how: Hold the golden set as a versioned dataset; run the candidate as an experiment and read scores per slice.
+        caveat: Your dataset and history end up in the vendor. Check the export path on day one, not at renewal.
+      - approach: open-source
+        mechanism: M2
+        tools: [promptfoo, DeepEval, OpenAI Evals]
+        how: Declare cases and assertions in config or as pytest-style tests; run in CI and fail on a threshold.
+        caveat: You own storage of results and trends yourself, which is where most teams stop.
+      - approach: in-house
+        mechanism: M2
+        tools: [pytest, a JSONL fixture]
+        how: Loop the fixture, score with your own function, write results to a file the next run compares against.
+        caveat: Trivial to start, and slice-level reporting is the part that quietly never gets built.
+      - approach: cloud-native
+        mechanism: M4
+        tools: [Azure AI Foundry evaluation, Vertex AI evaluation, Bedrock model evaluation]
+        how: Managed evaluation jobs against a stored dataset, inside the cloud boundary you already run in.
+        caveat: Convenient where data residency forbids sending prompts to a third-party platform.
+
+  AAC-0002:  # Output conforms to its declared contract
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [Pydantic, JSON Schema, zod]
+        how: Validate every response at the boundary before it reaches the consumer; treat a validation failure as a defined path, not an exception.
+        caveat: Strongest and cheapest option available. Start here.
+      - approach: open-source
+        mechanism: M1
+        tools: [Instructor, Outlines, Guardrails AI]
+        how: Constrain or re-ask until the response parses into your type.
+        caveat: Retry-until-valid hides a quality problem inside a cost problem — count the retries.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [provider structured-output and JSON modes]
+        how: Ask the model API to constrain generation to your schema.
+        caveat: Support and strictness vary by provider and model, so this is the first thing to break on a fallback route.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Validate responses at the proxy so calls that bypassed your wrapper are still checked.
+
+  AAC-0003:  # Instruction and constraint adherence
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [langdetect, plain assertions]
+        how: Make every mechanically checkable constraint a deterministic test — output language, length bounds, forbidden strings, required disclaimer.
+        caveat: Usually more of the constraint list is deterministic than teams assume. Do these before reaching for a judge.
+      - approach: open-source
+        mechanism: M3
+        tools: [promptfoo llm-rubric, DeepEval GEval]
+        how: One rubric per constraint, scored by a model, run as part of the pre-release suite.
+        caveat: One case per constraint, not one aggregate score — an aggregate hides which constraint broke.
+      - approach: platform
+        mechanism: M3
+        tools: [LangSmith, Langfuse, Braintrust]
+        how: Rubric scorers attached to a dataset, and the same scorers reused on sampled production traffic.
+      - approach: human
+        mechanism: M6
+        tools: [annotation queue]
+        how: Review a periodic sample to calibrate the judge that does the bulk of the work.
+
+  # ----------------------------------------------------------- safety, sec --
+  AAC-0004:  # Resistance to injection from untrusted content
+    options:
+      - approach: open-source
+        mechanism: M7
+        tools: [garak, PyRIT, promptfoo red-team]
+        how: Generate and run attack corpora against your actual application, not against the bare model.
+        caveat: The application is the unit under test. A model that resists an attack in isolation can still obey it once your prompt wraps it.
+      - approach: in-house
+        mechanism: M7
+        tools: [a canary corpus]
+        how: Plant an instruction with a distinctive canary token in every untrusted channel; assert the token never appears in output or tool arguments.
+        caveat: The cheapest high-signal test in this catalog. Works for direct input, retrieved documents and tool results alike.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [Azure AI Content Safety prompt shields, Amazon Bedrock Guardrails, Vertex AI safety filters]
+        how: Managed injection and jailbreak classifiers in front of the model.
+        caveat: Detection, not prevention. Treat as one layer, never as the reason the underlying design is safe.
+      - approach: gateway
+        mechanism: M1
+        tools: [Lakera, gateway guardrail hooks]
+        how: Screen inbound content at the proxy so every caller is covered.
+
+  AAC-0005:  # Safety and policy compliance under adversarial input
+    options:
+      - approach: cloud-native
+        mechanism: M1
+        tools: [Azure AI Content Safety, Amazon Bedrock Guardrails, Vertex AI safety filters]
+        how: Configure the policy categories you care about and enforce on input and output.
+        caveat: Fastest route to a defensible baseline, and procurement is usually already done.
+      - approach: open-source
+        mechanism: M3
+        tools: [NeMo Guardrails, Llama Guard, Guardrails AI]
+        how: Run a safety classifier you host, so no prompt content leaves your environment.
+      - approach: in-house
+        mechanism: M2
+        tools: [a labelled policy corpus]
+        how: Measure block rate AND over-block rate on your own labelled set.
+        caveat: Whatever else you use, you need this. Measuring only blocks makes over-refusal invisible, and over-refusal is what users actually complain about.
+      - approach: platform
+        mechanism: M3
+        tools: [safety scorers on sampled traffic]
+        how: Score a production sample continuously and alert on drift.
+
+  AAC-0006:  # No leakage of PII, secrets or credentials
+    options:
+      - approach: open-source
+        mechanism: M1
+        tools: [Microsoft Presidio, detect-secrets, gitleaks]
+        how: Run detectors over outputs and over anything written to logs.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [Google Cloud DLP, Amazon Comprehend PII, Azure AI Language PII detection]
+        how: Managed detection and redaction, usually with better entity coverage per locale than a regex set.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Helicone]
+        how: Redact or block on egress, covering paths your application code does not own.
+      - approach: in-house
+        mechanism: M1
+        tools: [canary fixtures]
+        how: Seed known personal data into test inputs and assert it never appears in output, logs or traces.
+        caveat: Catches the leak path that matters most — data arriving through retrieval or tool results rather than the user's prompt.
+
+  AAC-0106:  # The system prompt is not a security boundary
+    options:
+      - approach: open-source
+        mechanism: M7
+        tools: [garak, PyRIT, promptfoo red-team]
+        how: Run prompt-extraction probes and assert the system prompt is not reproduced.
+      - approach: in-house
+        mechanism: M1
+        tools: [a lint rule]
+        how: Assert no credential, key, internal hostname or access rule appears in prompt text at all.
+        caveat: This is the half that actually carries the risk. Extraction testing without it measures the wrong thing, because the prompt will eventually leak.
+
+  # ------------------------------------------------------ cost and latency --
+  AAC-0007:  # Latency within budget at expected concurrency
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [k6, Locust, pytest-benchmark]
+        how: Load test at realistic concurrency; assert p50, p95 and time-to-first-token where you stream.
+        caveat: Test the fallback path too. It is the one users hit on a bad day and the one nobody measures.
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry histogram, Prometheus, Grafana]
+        how: Record duration as a histogram and alert on the percentile rather than the mean.
+      - approach: platform
+        mechanism: M2
+        tools: [LangSmith, Langfuse, Helicone]
+        how: Latency captured per trace, sliceable by model and route.
+      - approach: gateway
+        mechanism: M2
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Per-route latency and timeout enforcement in one place for every caller.
+
+  AAC-0008:  # Cost per successful task, not per call
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [a rate card in your repo, OpenTelemetry counters]
+        how: Price token usage against a published rate card, tag with task outcome, divide by SUCCESSFUL tasks.
+        caveat: The denominator is the whole obligation. On a free tier, price against a published card anyway as shadow cost, or the metric reads zero and never gets exercised.
+      - approach: gateway
+        mechanism: M2
+        tools: [LiteLLM, Portkey, Helicone, Cloudflare AI Gateway]
+        how: Per-request cost attribution for every caller, including ones your instrumentation missed.
+      - approach: platform
+        mechanism: M2
+        tools: [LangSmith, Langfuse, Braintrust]
+        how: Cost recorded per trace and per session, aggregated by tag.
+        caveat: Verify the rate card the platform uses is current, and that it prices cached and batch tokens differently.
+
+  AAC-0102:  # Cost regression is gated at release
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [your CI job]
+        how: Compute cost per successful task for candidate and incumbent on the same frozen set; fail the job past a threshold you choose.
+        caveat: Almost nobody does this, and it is a dozen lines. Quality is gated everywhere; cost is merely reported.
+      - approach: platform
+        mechanism: M2
+        tools: [LangSmith, Braintrust, Langfuse]
+        how: Cost is recorded per experiment, so the comparison is a query rather than new plumbing.
+
+  AAC-0103:  # Context growth is tracked across releases
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [a token counter, pytest]
+        how: Assert input tokens per representative task stay under a budget; raise the budget deliberately, in a reviewed commit.
+        caveat: Turning a trend into a CI assertion is what makes the accretion visible, because no release diff ever shows it.
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry histogram, Grafana]
+        how: Trend input tokens per task release over release.
+
+  AAC-0104:  # Spend is attributable to tenant, feature and route
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry, Prometheus]
+        how: Put tenant, feature and route on the cost counter as labels at emission time.
+        caveat: Attribution cannot be added retroactively. Labels absent at emission are gone.
+      - approach: gateway
+        mechanism: M2
+        tools: [LiteLLM, Portkey, Helicone]
+        how: Virtual keys or tags per tenant and feature; the gateway reports spend by them.
+        caveat: The lowest-effort route by a wide margin if a gateway is already on the path.
+
+  AAC-0093:  # Per-caller quota and spend ceilings are enforced
+    options:
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway, Cloudflare AI Gateway]
+        how: Budget and rate limits per virtual key, enforced outside application logic.
+        caveat: The reason gateways exist. Doing this in application code means every new caller re-implements it.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [API Gateway usage plans, cloud rate limiting]
+        how: Quota at the edge, before the request reaches your service.
+      - approach: in-house
+        mechanism: M1
+        tools: [a token bucket keyed by tenant]
+        how: Enforce in a shared middleware, never per endpoint.
+
+  # ------------------------------------------------------------ resilience --
+  AAC-0009:  # Graceful degradation on provider failure
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [a stub provider, responses, VCR, toxiproxy]
+        how: Inject 429s, timeouts, 5xx, malformed bodies and content-filter refusals; assert the retry, fallback and user-facing behaviour.
+        caveat: Silent truncation is the failure to hunt for. It looks like a short answer, not like an error.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Configure retries, fallbacks and circuit breaking centrally — then test that they actually fire.
+        caveat: Configuring a fallback is not evidence it works. The test is the obligation, not the config.
+
+  AAC-0015:  # Defined behaviour on degenerate input
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [pytest parametrize]
+        how: One parametrised test over empty, oversized, wrong-language, encoding-corrupt, markup-injected and pure-noise input.
+        caveat: An afternoon's work and it never stops paying.
+      - approach: open-source
+        mechanism: M7
+        tools: [Hypothesis, Atheris]
+        how: Property-based fuzzing over the input boundary.
+
+  AAC-0010:  # Variance across repeated runs is bounded
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [your eval loop]
+        how: Run the same inputs N times and record the spread.
+        caveat: You cannot read a regression signal without knowing your own noise floor. Do this once before setting any threshold.
+      - approach: platform
+        mechanism: M2
+        tools: [repeat runs on an experiment]
+        how: Repeat the dataset run and report variance alongside the mean.
+
+  # --------------------------------------------------------- observability --
+  AAC-0011:  # Every call emits a complete trace
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry SDK, GenAI semantic conventions]
+        how: Emit gen_ai.* attributes by hand and assert their presence in CI with an in-memory span exporter.
+        caveat: Most portable option, and the one that teaches you what the attributes mean. Telemetry rots silently without the CI assertion.
+      - approach: open-source
+        mechanism: M5
+        tools: [OpenLLMetry, OpenInference]
+        how: Auto-instrumentation that emits conventional spans for common libraries.
+        caveat: Fast, and you inherit whatever the instrumentation chose to record.
+      - approach: platform
+        mechanism: M5
+        tools: [LangSmith, Langfuse, Braintrust, Phoenix]
+        how: SDK decorators produce traces in the platform's own schema.
+        caveat: Check whether it also exports OpenTelemetry. Schema is where lock-in actually lives.
+
+  AAC-0100:  # The serving route is recorded, with its reason and its cost
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry span attributes]
+        how: Record model, route, selection reason — rule, threshold, cache hit, fallback after failure — and cost on the span.
+        caveat: Recording the model alone cannot distinguish a silent failover from normal operation.
+      - approach: gateway
+        mechanism: M5
+        tools: [LiteLLM, Portkey]
+        how: The routing decision is emitted by the component that made it.
+
+  # ------------------------------------------------- release and lifecycle --
+  AAC-0012:  # Model and prompt versions pinned, rollback exercised
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [config in version control, a prompt hash]
+        how: Pin the model identifier and hash the prompt; record both on every span; rehearse the revert rather than assuming it.
+      - approach: platform
+        mechanism: M1
+        tools: [LangSmith prompt registry, Langfuse prompt management]
+        how: Versioned prompts with a rollback path and per-version metrics.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM model aliases]
+        how: Pin an alias centrally so a rollback is one config change for every caller.
+
+  AAC-0013:  # Regression against the previous release
+    options:
+      - approach: platform
+        mechanism: M4
+        tools: [LangSmith, Braintrust, Langfuse]
+        how: Compare candidate against incumbent on the same dataset; report wins, losses and ties per case.
+        caveat: Per-case, not aggregate. Parity routinely hides a fixed-one-broke-two trade.
+      - approach: open-source
+        mechanism: M4
+        tools: [promptfoo compare, DeepEval]
+        how: Run both against the same config and diff.
+      - approach: in-house
+        mechanism: M2
+        tools: [a stored baseline file]
+        how: Keep last release's per-case results in the repo and diff on every run.
+
+  AAC-0016:  # Scheduled re-run against unchanged inputs
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [a scheduled CI workflow]
+        how: Re-run the frozen suite nightly or weekly with nothing changed on your side; alert on movement.
+        caveat: The cheapest drift detector there is. Movement here means the provider changed something under you.
+      - approach: platform
+        mechanism: M2
+        tools: [scheduled experiments]
+        how: Recurring dataset runs with alerting on score change.
+
+  AAC-0014:  # Continuous scoring of sampled production traffic
+    options:
+      - approach: platform
+        mechanism: M3
+        tools: [LangSmith online evaluators, Langfuse, Braintrust, Phoenix]
+        how: Attach the same rubrics used offline to a sample of live traces; alert on threshold breach.
+        caveat: Reuse the offline rubrics deliberately. Different scorers online and offline means the two numbers cannot be compared.
+      - approach: in-house
+        mechanism: M3
+        tools: [a sampling worker, your judge]
+        how: Sample traces to a queue and score asynchronously, never on the request path.
+        caveat: Judging all traffic rather than a sample is a real and common way to spend more on evaluation than on serving.
+
+  AAC-0107:  # Serving artifacts are the ones that were evaluated
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [digests in config, a CI assertion]
+        how: Pin model, adapter, embedding model and prompt revision by identifier or digest, and assert at release that what serves matches what passed evaluation.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [SageMaker Model Registry, Vertex AI Model Registry, Azure ML registry]
+        how: Immutable versioned artifacts with a promotion path.
+      - approach: gateway
+        mechanism: M1
+        tools: [pinned model aliases]
+        how: One place decides which artifact is reachable.
+
+  # --------------------------------------------------- runtime enforcement --
+  AAC-0091:  # Guardrail enforcement fails closed
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [an integration test with the dependency down]
+        how: Take the guardrail service away and assert the request fails closed or degrades to a defined safe path.
+        caveat: Fail-open is the default in most deployments, and it is how a safety control silently stops existing while still showing as configured.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Configure the failure mode explicitly rather than inheriting it — then test it.
+
+  AAC-0092:  # Streamed output is screened before it reaches the caller
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [a buffered scan window]
+        how: Screen a rolling window of tokens before release rather than the completed response.
+        caveat: The trade-off is explicit and unavoidable — buffering everything to check it discards the reason streaming was chosen.
+      - approach: gateway
+        mechanism: M1
+        tools: [streaming-aware guardrail hooks]
+        how: Screen the stream at the proxy.
+        caveat: Confirm the product screens the STREAM. Several apply policy to the completed response only, which cannot unsay what was already delivered.
+
+  AAC-0094:  # Only approved models are reachable
+    options:
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Allowlist at egress; unapproved model identifiers are refused.
+      - approach: cloud-native
+        mechanism: M1
+        tools: [IAM policy, service control policies, private endpoints]
+        how: Deny invocation of unapproved models at the identity layer, and block egress to provider APIs.
+        caveat: The only version of this that also stops a direct SDK call from application code.
+      - approach: in-house
+        mechanism: M1
+        tools: [a lint rule, an import guard]
+        how: Forbid direct provider SDK use in CI so every call goes through the client that enforces the list.
+
+  AAC-0095:  # Logged prompts and responses are redacted and retention-bounded
+    options:
+      - approach: in-house
+        mechanism: M5
+        tools: [OpenTelemetry Collector redaction processors]
+        how: Redact in the collector so redaction happens once, outside every application.
+        caveat: Cleanest place for it. Redacting in each service means each service can forget.
+      - approach: open-source
+        mechanism: M1
+        tools: [Microsoft Presidio]
+        how: Detect and mask entities in the log write path.
+      - approach: platform
+        mechanism: M1
+        tools: [masking hooks, retention settings]
+        how: Configure masking before ingestion and a retention window that matches your policy.
+        caveat: Both halves. Masking with unbounded retention still fails the obligation.
+
+  AAC-0096:  # Cached responses never cross a trust boundary
+    options:
+      - approach: in-house
+        mechanism: M7
+        tools: [an adversarial cache test]
+        how: Include every identity and permission dimension in the cache key; prime the cache as one principal and request as another.
+      - approach: gateway
+        mechanism: M1
+        tools: [per-key cache namespaces]
+        how: Namespace the cache by virtual key so isolation is structural rather than remembered.
+
+  AAC-0097:  # Processing region is enforced and recorded
+    options:
+      - approach: cloud-native
+        mechanism: M1
+        tools: [regional endpoints, data residency controls, private endpoints]
+        how: Constrain inference to a region at the infrastructure layer and record which region served.
+        caveat: The failure mode is a fallback route crossing a boundary during a regional outage — exactly the condition nobody rehearses.
+      - approach: gateway
+        mechanism: M5
+        tools: [region-pinned routing]
+        how: Pin routing by region and emit the region on the span.
+
+  # ------------------------------------------------------------ multi-model --
+  AAC-0098:  # Every reachable model is evaluated, not just the primary
+    options:
+      - approach: open-source
+        mechanism: M2
+        tools: [promptfoo provider matrix]
+        how: List every reachable provider and model in one config; the same cases run against all of them.
+        caveat: This is what the tool is shaped for, and it is close to free once the suite exists.
+      - approach: in-house
+        mechanism: M2
+        tools: [a CI matrix]
+        how: Parametrise the eval job over the model list, including fallback and cheap routes.
+      - approach: platform
+        mechanism: M4
+        tools: [one experiment per model]
+        how: Run the dataset per model and compare.
+
+  AAC-0099:  # The output contract holds on every route
+    options:
+      - approach: in-house
+        mechanism: M1
+        tools: [pytest parametrize over the model list]
+        how: Run the contract tests against every reachable model, not only the primary.
+        caveat: Structured-output reliability varies sharply between models, so this breaks on the fallback route while every aggregate quality metric stays flat.
+      - approach: open-source
+        mechanism: M1
+        tools: [promptfoo]
+        how: Same assertions, every provider, one config.
+
+  AAC-0101:  # Routing changes are gated like model changes
+    options:
+      - approach: in-house
+        mechanism: M2
+        tools: [routing config in version control, a CI trigger]
+        how: Keep routing rules, thresholds and the reachable model set in the repo so a change to them triggers the same suite a prompt change would.
+        caveat: The gap is procedural, not technical. Routing config conventionally ships through a config path with none of the evaluation.
+      - approach: gateway
+        mechanism: M1
+        tools: [LiteLLM, Portkey, Kong AI Gateway]
+        how: Keep gateway routing config as code with a review and deploy path, rather than editing it in a console.
+        caveat: A console edit is a production behaviour change with no diff, no review and no test run. That is the whole risk.
+      - approach: platform
+        mechanism: M4
+        tools: [LangSmith, Braintrust]
+        how: Treat a routing change as a release candidate and run the comparison experiment before promoting it.

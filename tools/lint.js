@@ -162,6 +162,35 @@ if (fs.existsSync(patDir)) {
   });
 }
 
+/*
+ * Realizations are informative and may name products — the only layer that may.
+ * They are still held to two rules: every case they describe must exist, and
+ * every option must state which mechanism it realizes, so the concrete layer
+ * stays tied to the spec rather than drifting into a tool directory.
+ */
+const realSchema = JSON.parse(fs.readFileSync(path.join(ROOT, "schema/realization.schema.json"), "utf8"));
+const validateReal = ajv.compile(realSchema);
+let realCases = 0, realOptions = 0;
+const realDir = path.join(ROOT, "realizations");
+if (fs.existsSync(realDir)) {
+  for (const f of fs.readdirSync(realDir).filter((x) => x.endsWith(".yaml")).sort()) {
+    const rel = `realizations/${f}`;
+    const doc = yaml.load(fs.readFileSync(path.join(realDir, f), "utf8"));
+    if (!validateReal(doc)) {
+      for (const e of validateReal.errors) err(rel, `schema ${e.instancePath || "/"} ${e.message}`);
+      continue;
+    }
+    for (const [id, entry] of Object.entries(doc.cases)) {
+      if (!byId.has(id)) { err(rel, `describes unknown case ${id}`); continue; }
+      realCases += 1;
+      realOptions += entry.options.length;
+      for (const o of entry.options) if (!MECH.has(o.mechanism)) err(rel, `${id}: unknown mechanism ${o.mechanism}`);
+      // Listing one way to build something is a recommendation by omission.
+      if (entry.options.length < 2) warn(rel, `${id} lists a single option — is there really only one way?`);
+    }
+  }
+}
+
 // ---- report ----
 const gates = [...byId.values()].filter((d) => d.gate).length;
 const musts = [...byId.values()].filter((d) => d.level === "MUST").length;
@@ -173,6 +202,7 @@ if (patterns.size) {
   // Surfaced, never silent: an uncaught pattern is a hole in the catalog.
   for (const g of gaps) console.log(`  GAP   ${g.id} "${g.name}" — no obligation catches this (${g.file})`);
 }
+if (realCases) console.log(`realizations: ${realCases} cases, ${realOptions} concrete options`);
 for (const c of crosswalks) {
   console.log(`crosswalk ${c.framework}: ${c.entries} entries -> ${c.mapped} cases`);
 }

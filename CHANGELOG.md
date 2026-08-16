@@ -18,6 +18,54 @@ Remaining crosswalks: NIST AI RMF, ISO/IEC 42001, EU AI Act.
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
 
+## [0.10.0] — 2026-08-16
+
+The spec-to-concrete layer. An obligation nobody knows how to build is a
+principle, not a test.
+
+### Added — `realizations/`
+
+**88 concrete options across the 32 core obligations**, each naming the
+approach, the mechanism it realizes, illustrative products, what you actually
+do, and the trade-off it makes.
+
+- `schema/realization.schema.json`
+- `realizations/core.yaml`, `realizations/README.md`
+- A sixth axis in `taxonomy/realization.yaml`: **approach** — `in-house`,
+  `open-source`, `platform`, `gateway`, `cloud-native`, `human`
+- The site renders a "How to build it — N ways" disclosure inside every case
+  card that has one
+
+### Why an approach axis, and why several options
+
+Approach answers *who provides the machinery*, orthogonal to mechanism and
+stage. The same mechanism is usually available from four of the six — which is
+the picture a reader needs, and exactly what a single tool column destroys.
+
+Two of the six earn a note. **`gateway` is the only approach that can prevent
+rather than detect**, and the only one covering calls the application forgot to
+route through the wrapper — structurally different, not just another vendor
+category. **`in-house` is chronically under-considered and often strongest**: a
+canary corpus for injection, a token-budget assertion for context growth, a cost
+comparison in CI are each a dozen lines and beat any product, because they
+assert what you meant rather than what a product happens to measure.
+
+### Rules, because informative is not unconstrained
+
+The linter requires every referenced case to exist and every option to state its
+mechanism, so the concrete layer stays tied to the spec instead of drifting into
+a tool directory. **A single-option entry is a warning** — listing one way to
+build something is a recommendation by omission, and that rule immediately
+caught `AAC-0101`, which had one.
+
+### Staleness is deliberate and visible
+
+`checked: "2026-08"` sits in the file header. Products change far faster than
+obligations, which is why this layer versions separately and why a vendor
+shipping a feature must never force a version bump in `catalog/`. The header
+says plainly that product claims must be verified and that some are already
+wrong.
+
 ## [0.9.0] — 2026-08-16
 
 Phase 5, which completes the roadmap. Everything the project set out to build
@@ -437,7 +485,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...v0.7.0

@@ -35,6 +35,16 @@ const crosswalks = !fs.existsSync(cwDir) ? [] : fs
   .sort()
   .map((f) => yaml.load(fs.readFileSync(path.join(cwDir, f), "utf8")));
 
+const realDir = path.join(ROOT, "realizations");
+const realizations = {};
+if (fs.existsSync(realDir)) {
+  for (const f of fs.readdirSync(realDir).filter((x) => x.endsWith(".yaml")).sort()) {
+    const d = yaml.load(fs.readFileSync(path.join(realDir, f), "utf8"));
+    Object.assign(realizations, d.cases);
+  }
+}
+const approaches = real.approaches || [];
+
 const patDir = path.join(ROOT, "patterns");
 const patterns = !fs.existsSync(patDir) ? [] : fs
   .readdirSync(patDir)
@@ -52,6 +62,8 @@ const data = {
   stages: real.stages,
   levels: real.levels,
   dimensions: real.dimensions,
+  approaches,
+  realizations,
   cases: cases.map((c) => ({
     id: c.id, legacy: c.legacy_id, level: c.level, dim: c.dimension, gate: c.gate,
     core: c.core, arch: c.archetypes, title: c.title.trim(), text: c.statement.trim(),
@@ -162,6 +174,19 @@ td.k{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowra
 .chip{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:2px;background:var(--accent-soft);color:var(--accent);border:1px solid transparent;cursor:help;white-space:nowrap}
 .chip.n{background:var(--sunk);color:var(--ink-2);border-color:var(--rule)}
 .chip.gate{background:var(--must-bg);color:var(--must)}
+.how{margin-top:12px;border-top:1px dashed var(--rule);padding-top:10px}
+.how summary{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);cursor:pointer;list-style:none}
+.how summary::-webkit-details-marker{display:none}
+.how summary::before{content:"▸ ";font-size:9px}
+.how[open] summary::before{content:"▾ "}
+.how ul{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:9px}
+.how li{display:grid;grid-template-columns:104px 1fr;gap:12px;align-items:start}
+@media(max-width:620px){.how li{grid-template-columns:1fr;gap:3px}}
+.how .ap{font-family:var(--mono);font-size:10px;letter-spacing:.04em;color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:2px;text-align:center;cursor:help}
+.how .body{font-size:14.5px;line-height:1.5;color:var(--ink-2);max-width:62ch}
+.how .tools{font-family:var(--mono);font-size:11px;color:var(--ink-3);display:block;margin-top:3px}
+.how .cav{display:block;margin-top:3px;font-size:13.5px;color:var(--ink-3)}
+.how .cav::before{content:"caveat — ";font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase}
 .empty{background:var(--surface);border:1px solid var(--rule);padding:34px;text-align:center;font-family:var(--mono);font-size:13px;color:var(--ink-3)}
 .matrix{overflow-x:auto;margin:26px 0;border:1px solid var(--rule);background:var(--surface)}
 .matrix table{min-width:720px;font-family:var(--mono);font-size:12px}
@@ -210,6 +235,20 @@ let sel = "ALL";
 const q = document.getElementById("q"), mustonly = document.getElementById("mustonly"), gateonly = document.getElementById("gateonly");
 const chip = (cls, txt, title) => \`<span class="chip \${cls}" title="\${esc(title)}">\${esc(txt)}</span>\`;
 
+const APPROACH = Object.fromEntries((D.approaches||[]).map(a => [a.id, a]));
+function howHTML(id){
+  const entry = (D.realizations||{})[id];
+  if (!entry) return "";
+  return \`<details class="how"><summary>How to build it — \${entry.options.length} ways</summary><ul>\${
+    entry.options.map(o => \`<li>
+      <span class="ap" title="\${esc((APPROACH[o.approach]||{}).summary||o.approach)}">\${esc(o.approach)}</span>
+      <span class="body">\${esc(o.how)}
+        <span class="tools">\${esc(o.tools.join(" · "))} · \${o.mechanism} \${esc(MECH_LABEL[o.mechanism]||"")}</span>
+        \${o.caveat ? \`<span class="cav">\${esc(o.caveat)}</span>\` : ""}
+      </span></li>\`).join("")
+  }</ul></details>\`;
+}
+
 function caseHTML(c){
   return \`<article class="case" id="\${c.id}">
     <div class="lhs"><div class="caseline">
@@ -218,7 +257,7 @@ function caseHTML(c){
       <span class="lvl \${c.level}">\${c.level}</span><span class="dim">\${c.dim}</span>
       \${c.legacy ? \`<span class="legacy">was \${c.legacy}</span>\` : ""}
     </div>
-    <h5>\${esc(c.title)}</h5><p>\${esc(c.text)}</p></div>
+    <h5>\${esc(c.title)}</h5><p>\${esc(c.text)}</p>\${howHTML(c.id)}</div>
     <div class="rhs">
       <div class="slot"><span class="sk">Mech</span><span class="chips">\${c.mech.map(m => chip("", m, MECH_LABEL[m])).join("")}</span></div>
       <div class="slot"><span class="sk">Stage</span><span class="chips">\${c.stage.map(s => chip("n", s, STAGE_LABEL[s])).join("")}</span></div>

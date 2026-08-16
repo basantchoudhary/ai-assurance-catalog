@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.9.0** — identifiers are stable from the first tagged
+Status: **working draft 0.10.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -65,6 +65,25 @@ following, and cites all of them:
 See [docs/NON-GOALS.md](docs/NON-GOALS.md). The linter enforces part of this
 mechanically: naming a product inside a case's normative text is a build error.
 
+## From spec to concrete
+
+An obligation that nobody knows how to build is a principle, not a test. So
+[`realizations/`](realizations/) answers the next question — *what would I
+actually do?* — with several options per obligation across six approaches:
+
+| Approach | |
+|---|---|
+| `in-house` | a test or wrapper in your own repo — most portable, usually the strongest evidence |
+| `open-source` | a library you run — promptfoo, DeepEval, garak, Presidio, NeMo Guardrails |
+| `platform` | hosted eval and tracing — LangSmith, Langfuse, Braintrust, Phoenix |
+| `gateway` | enforcement on the request path — LiteLLM, Portkey, Kong AI Gateway |
+| `cloud-native` | managed services — Bedrock Guardrails, Azure AI Content Safety, Cloud DLP |
+| `human` | annotation and review, which calibrates everything model-graded |
+
+88 concrete options across the 32 core obligations so far. This is the **only**
+layer where products may be named, it versions separately, and it carries a
+`checked` date because it will go stale.
+
 ## Citing a case
 
 The unit of adoption is one identifier in one test name. That costs nothing and
@@ -89,6 +108,7 @@ deprecation rules.
 catalog/        108 cases, one YAML file each — the normative master
 taxonomy/       archetypes, mechanisms, stages, dimensions, levels
 schema/         JSON Schema for a case, a pattern, and a coverage report
+realizations/   how each obligation gets built — six approaches, named products
 patterns/       informative anti-patterns mapping into the cases that catch them
 crosswalks/     mappings to OWASP, NIST AI RMF, ISO 42001, EU AI Act
 tools/          linter, renderer, report builder, validator, badge

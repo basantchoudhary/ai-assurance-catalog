@@ -1,0 +1,97 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/realization.schema.json",
+  "title": "AAC Realization file",
+  "description": "How obligations get built, concretely. INFORMATIVE and the only layer where products may be named. Versioned separately from catalog/ because products change far faster than obligations do. Nothing here is a recommendation.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "layer",
+    "status",
+    "version",
+    "checked",
+    "cases"
+  ],
+  "properties": {
+    "layer": {
+      "const": "realization"
+    },
+    "status": {
+      "const": "informative"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "checked": {
+      "type": "string",
+      "description": "When product claims were last checked against documentation. Staleness here is expected and must be visible."
+    },
+    "cases": {
+      "type": "object",
+      "minProperties": 1,
+      "propertyNames": {
+        "pattern": "^AAC-[0-9]{4}$"
+      },
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "options"
+        ],
+        "properties": {
+          "options": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "approach",
+                "mechanism",
+                "tools",
+                "how"
+              ],
+              "properties": {
+                "approach": {
+                  "enum": [
+                    "in-house",
+                    "open-source",
+                    "platform",
+                    "gateway",
+                    "cloud-native",
+                    "human"
+                  ],
+                  "description": "WHO provides the machinery. Orthogonal to mechanism and stage."
+                },
+                "mechanism": {
+                  "type": "string",
+                  "pattern": "^M[1-7]$",
+                  "description": "Which verdict mechanism this option realizes."
+                },
+                "tools": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "string"
+                  },
+                  "description": "Illustrative products. Not endorsements, and expected to go stale."
+                },
+                "how": {
+                  "type": "string",
+                  "minLength": 20,
+                  "description": "What you actually do. One sentence."
+                },
+                "caveat": {
+                  "type": "string",
+                  "minLength": 10,
+                  "description": "What this option does not cover, or the trade-off it makes."
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
