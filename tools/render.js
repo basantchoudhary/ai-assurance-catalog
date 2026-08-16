@@ -28,6 +28,13 @@ const cases = fs
 
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
+const cwDir = path.join(ROOT, "crosswalks");
+const crosswalks = !fs.existsSync(cwDir) ? [] : fs
+  .readdirSync(cwDir)
+  .filter((f) => f.endsWith(".yaml"))
+  .sort()
+  .map((f) => yaml.load(fs.readFileSync(path.join(cwDir, f), "utf8")));
+
 const patDir = path.join(ROOT, "patterns");
 const patterns = !fs.existsSync(patDir) ? [] : fs
   .readdirSync(patDir)
@@ -339,6 +346,25 @@ const html = `<title>AI Assurance Catalog</title>
   <p>Read this as a design-review heat map. A dense column for your shape is where the test budget belongs. An empty cell for a risk you know you have means the classification is wrong.</p></div>
   <div class="matrix" id="matrix"></div>
 </div></section>
+
+${crosswalks.map((cw) => `<section><div class="wrap">
+  <div class="prose"><span class="snum">Crosswalk — ${esc(cw.framework)}</span>
+  <h2>What an existing framework maps to</h2>
+  <p class="lede">Informative. ${cw.mappings.length} entries, mapped to obligations across the archetypes that actually owe them.</p>
+  <p>The external framework is organised by <em>threat</em>; this catalog is organised by <em>application shape</em>. The mapping is many-to-many by construction, and that is the point — a single threat lands on several obligations across several archetypes, which is exactly what a threat list on its own cannot tell you.</p>
+  <p>Crosswalks release out of band: a revision upstream must never force a version bump in the catalog. <code>relation</code> records how tight each mapping is, because claiming a test obligation is <em>equivalent</em> to a governance control is the fastest way to have a crosswalk dismissed.</p></div>
+  <div class="tbl-scroll"><table style="min-width:860px"><thead><tr>
+    <th style="width:78px">Entry</th><th style="width:190px">Name</th><th style="width:86px">Relation</th><th>Obligations</th>
+  </tr></thead><tbody>
+  ${cw.mappings.map((m) => `<tr>
+    <td class="k">${esc(m.external)}</td>
+    <td><strong>${esc(m.external_name || "")}</strong></td>
+    <td><span class="chip n">${esc(m.relation)}</span></td>
+    <td><span class="chips" style="margin-bottom:6px">${m.cases.map((c) => `<span class="chip">${c}</span>`).join("")}</span>
+      ${m.note ? `<div style="font-size:13.5px;line-height:1.5;color:var(--ink-3)">${esc(m.note.trim())}</div>` : ""}</td>
+  </tr>`).join("")}
+  </tbody></table></div>
+</div></section>`).join("")}
 
 <section><div class="wrap">
   <div class="prose"><span class="snum">Section 6 — Patterns</span>

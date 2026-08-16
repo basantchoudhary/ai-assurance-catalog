@@ -1,0 +1,121 @@
+# Crosswalk: OWASP Top 10 for LLM Applications -> AAC obligations.
+#
+# INFORMATIVE. Released out of band from the catalog: an OWASP revision must
+# never force a version bump in catalog/.
+#
+# OWASP is organised by THREAT. This catalog is organised by APPLICATION SHAPE.
+# The mapping is therefore many-to-many and deliberately so — a single threat
+# lands on several obligations across several archetypes, which is exactly the
+# information an architect cannot get from the threat list alone.
+#
+# OWASP material is Creative Commons licensed, so entry names may be reproduced.
+# Descriptions are not restated here; the catalog cites, it does not paraphrase.
+
+framework: owasp-llm-top-10
+framework_version: "2025"
+framework_url: https://genai.owasp.org/
+license_note: >-
+  Creative Commons. Entry identifiers and names may be reproduced. Verify the
+  current revision at the source before citing — OWASP revises this list, and
+  the 2023 edition differed materially.
+version: "0.5.0"
+
+mappings:
+  - external: LLM01
+    external_name: Prompt Injection
+    relation: tests-for
+    cases: [AAC-0004, AAC-0036, AAC-0058, AAC-0106]
+    note: >-
+      Three distinct vectors, deliberately separate cases. AAC-0004 is the
+      direct channel, AAC-0036 is injection carried in retrieved documents, and
+      AAC-0058 is injection arriving through tool output. Systems that test the
+      front door thoroughly routinely miss the latter two, which is precisely
+      what the archetype axis makes visible.
+
+  - external: LLM02
+    external_name: Sensitive Information Disclosure
+    relation: tests-for
+    cases: [AAC-0006, AAC-0032, AAC-0040, AAC-0095, AAC-0096]
+    note: >-
+      Includes two disclosure paths that are not prompt-related at all:
+      AAC-0032 permission-scoped retrieval, and AAC-0096 cache keys that omit a
+      permission dimension. Both leak one principal's data to another without
+      any model behaviour being at fault.
+
+  - external: LLM03
+    external_name: Supply Chain
+    relation: partial
+    cases: [AAC-0012, AAC-0107, AAC-0094]
+    note: >-
+      AAC-0107 was written to close this gap, found by the first pass of this
+      crosswalk against draft 0.1. Coverage remains partial: the catalog
+      addresses artifact provenance and version pinning but not the security of
+      the training or fine-tuning pipeline, which is out of scope as a
+      model-level rather than application-level concern.
+
+  - external: LLM04
+    external_name: Data and Model Poisoning
+    relation: partial
+    cases: [AAC-0108, AAC-0041, AAC-0034]
+    note: >-
+      AAC-0108 was written to close this gap. Retrieval-corpus and long-term-
+      memory poisoning are covered; training-data poisoning is deliberately out
+      of scope per docs/NON-GOALS.md.
+
+  - external: LLM05
+    external_name: Improper Output Handling
+    relation: tests-for
+    cases: [AAC-0022, AAC-0027, AAC-0068, AAC-0071, AAC-0072]
+    note: >-
+      The strongest-covered entry in the list, because A8 can verify its output
+      by executing it. AAC-0071 treats generated artifacts as untrusted
+      contributor code, which is what they are.
+
+  - external: LLM06
+    external_name: Excessive Agency
+    relation: tests-for
+    cases: [AAC-0056, AAC-0057, AAC-0078, AAC-0081, AAC-0055]
+    note: >-
+      AAC-0057 carries the load: authorisation enforced server-side by the tool
+      rather than by prompt instruction. Most excessive-agency incidents are
+      not model failures — they are permission failures that a cooperative
+      model happened to be masking.
+
+  - external: LLM07
+    external_name: System Prompt Leakage
+    relation: tests-for
+    cases: [AAC-0106]
+    note: >-
+      Had no obligation at all until this crosswalk found the hole. AAC-0106
+      deliberately carries two halves: extraction is tested, and separately no
+      capability may depend on the prompt staying hidden. Testing extraction
+      alone measures the wrong thing.
+
+  - external: LLM08
+    external_name: Vector and Embedding Weaknesses
+    relation: tests-for
+    cases: [AAC-0032, AAC-0034, AAC-0036, AAC-0108, AAC-0028]
+    note: >-
+      AAC-0028 evaluates retrieval independently of generation. Most reported
+      failures attributed to this entry are retrieval-quality failures wearing
+      a generation costume, and they cannot be diagnosed without separating the
+      two.
+
+  - external: LLM09
+    external_name: Misinformation
+    relation: tests-for
+    cases: [AAC-0029, AAC-0030, AAC-0031, AAC-0084, AAC-0001]
+    note: >-
+      AAC-0031 abstention is the one teams omit: a dataset curated from
+      answerable questions never contains the unanswerable ones, so the
+      obligation has to be built deliberately or it is silently untested.
+
+  - external: LLM10
+    external_name: Unbounded Consumption
+    relation: tests-for
+    cases: [AAC-0055, AAC-0064, AAC-0077, AAC-0093, AAC-0102]
+    note: >-
+      OWASP frames this as availability and denial of service. The catalog also
+      carries it as an economic obligation — AAC-0102 gates cost regression at
+      release — which is the framing the security-oriented entry does not
+      supply. See patterns/cost.yaml for the failure shapes.

@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.4.0** — identifiers are stable from the first tagged
+Status: **working draft 0.5.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -25,7 +25,7 @@ thing nobody publishes. This is that catalog.
 
 ## What it is
 
-105 obligations. Each one states, in plain English, something that must be true
+108 obligations. Each one states, in plain English, something that must be true
 of a system — tagged with which architecture archetypes owe it, which classes of
 machinery can produce a verdict, at which lifecycle stage, and whether failure
 blocks.
@@ -46,9 +46,9 @@ stages: [S2, S4]          # CI pre-merge, runtime gateway
 tool_class: Test runner + gateway
 ```
 
-Thirty of the 105 are **core** — owed by every AI application regardless of
+Thirty-two of the 108 are **core** — owed by every AI application regardless of
 shape. The rest are archetype deltas: what is *new* about that shape's risk
-surface. That is why this is 105 cases and not several hundred.
+surface. That is why this is 108 cases and not several hundred.
 
 ## What it is not
 
@@ -86,7 +86,7 @@ deprecation rules.
 ## Layout
 
 ```
-catalog/        105 cases, one YAML file each — the normative master
+catalog/        108 cases, one YAML file each — the normative master
 taxonomy/       archetypes, mechanisms, stages, dimensions, levels
 schema/         JSON Schema for a case
 patterns/       informative anti-patterns mapping into the cases that catch them
@@ -107,7 +107,7 @@ npm run render    # YAML -> site
 ## Roadmap
 
 - [x] **Phase 0** — normative core: catalog, schema, identifier policy, renderer
-- [ ] **Phase 1** — crosswalks to OWASP LLM Top 10, NIST AI RMF, ISO 42001, EU AI Act
+- [~] **Phase 1** — crosswalks: OWASP LLM Top 10 done; NIST AI RMF, ISO 42001, EU AI Act to go
 - [ ] **Phase 2** — coverage report schema (the artifact an auditor consumes)
 - [ ] **Phase 3** — adapters: junit, promptfoo, DeepEval, eval-platform exports
 - [ ] **Phase 4** — public reference implementation emitting a real report, failures included

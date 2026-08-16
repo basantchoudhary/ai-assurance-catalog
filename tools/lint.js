@@ -99,16 +99,33 @@ for (const [id, doc] of byId) {
   }
 }
 
-// crosswalks may only reference cases that exist
+/*
+ * Crosswalks may only reference cases that exist, and must record how tight the
+ * mapping is. `relation` exists to stop the failure that discredits a crosswalk
+ * fastest: claiming a test obligation is equivalent to a management-system
+ * control, when it is at best evidence that a process operated.
+ */
+const RELATIONS = new Set(["evidence-for", "tests-for", "partial"]);
 const cwDir = path.join(ROOT, "crosswalks");
+const crosswalks = [];
 if (fs.existsSync(cwDir)) {
-  for (const f of fs.readdirSync(cwDir).filter((x) => x.endsWith(".yaml"))) {
+  for (const f of fs.readdirSync(cwDir).filter((x) => x.endsWith(".yaml")).sort()) {
+    const rel = `crosswalks/${f}`;
     const cw = yaml.load(fs.readFileSync(path.join(cwDir, f), "utf8"));
+    if (!cw.framework) { err(rel, "missing framework"); continue; }
+    const mapped = new Set();
     for (const m of cw.mappings || []) {
+      if (!m.external) err(rel, "mapping missing external identifier");
+      if (!RELATIONS.has(m.relation)) {
+        err(rel, `${m.external}: relation must be one of ${[...RELATIONS].join(", ")}`);
+      }
+      if (!(m.cases || []).length) err(rel, `${m.external}: no cases mapped`);
       for (const c of m.cases || []) {
-        if (!byId.has(c)) err(`crosswalks/${f}`, `references unknown case ${c}`);
+        if (!byId.has(c)) err(rel, `${m.external} references unknown case ${c}`);
+        else mapped.add(c);
       }
     }
+    crosswalks.push({ framework: cw.framework, entries: (cw.mappings || []).length, mapped: mapped.size });
   }
 }
 
@@ -155,6 +172,9 @@ if (patterns.size) {
   console.log(`patterns: ${patterns.size} informative`);
   // Surfaced, never silent: an uncaught pattern is a hole in the catalog.
   for (const g of gaps) console.log(`  GAP   ${g.id} "${g.name}" — no obligation catches this (${g.file})`);
+}
+for (const c of crosswalks) {
+  console.log(`crosswalk ${c.framework}: ${c.entries} entries -> ${c.mapped} cases`);
 }
 for (const w of warnings) console.log(`  warn  ${w}`);
 if (errors.length) {

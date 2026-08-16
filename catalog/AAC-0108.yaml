@@ -1,0 +1,35 @@
+# AAC-0108 — Corpus ingestion is controlled and auditable
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0108
+status: active
+since: "0.5.0"
+
+level: MUST
+dimension: security
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A3
+core: false
+
+title: |-
+  Corpus ingestion is controlled and auditable
+
+statement: |-
+  Content entering the retrieval corpus passes provenance and integrity checks, and the corpus can be audited after the fact for adversarial or contradictory material. Where any part of the corpus is user-contributed or externally sourced, a single poisoned document silently changes answers for every user who retrieves it, and nothing in generation-side evaluation will surface it.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M7
+stages:
+  - S2
+  - S6
+tool_class: |-
+  Test runner + red-team harness
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

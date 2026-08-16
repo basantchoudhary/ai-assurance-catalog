@@ -1,0 +1,44 @@
+# AAC-0107 — Serving artifacts are the ones that were evaluated
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0107
+status: active
+since: "0.5.0"
+
+level: MUST
+dimension: security
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Serving artifacts are the ones that were evaluated
+
+statement: |-
+  Model version, adapter weights, embedding model, prompt revision and third-party components are pinned by identifier or digest, and the release gate verifies that what serves traffic is what passed evaluation. Any of these substituted after evaluation invalidates every result the gate relied on, and the substitution is usually invisible because the interface does not change.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M5
+stages:
+  - S2
+  - S3
+tool_class: |-
+  Test runner
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

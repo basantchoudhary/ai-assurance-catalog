@@ -12,8 +12,61 @@ ship. A quarter with no changes ships a release note saying so.
 Phase 1: crosswalks to OWASP LLM Top 10, NIST AI RMF, ISO/IEC 42001 and the
 EU AI Act.
 
-Two obligations to write, both surfaced by `patterns/` against 0.4.0 — see
-"An empty caught_by is a finding" in [patterns/README.md](patterns/README.md).
+**Phase 2 — coverage report schema.** This is the last specification artifact.
+Adapters emit *into* that format, so it must exist before Phase 3 can begin.
+
+Content work is deliberately paused after Phase 2. The catalog grew 90 → 108
+across five releases with no running report yet, which is content accretion —
+`AACP-0002`, in our own catalogue. Remaining obligations (the two pattern gaps,
+thin `latency` coverage) are additive and invalidate nothing, so they wait until
+Phases 3 and 4 have produced a report with real failures in it.
+
+## [0.5.0] — 2026-08-16
+
+Additive. Phase 1 opens: first crosswalk, plus the three obligations it found
+missing.
+
+### Added — `crosswalks/owasp-llm.yaml`
+
+All 10 entries of the OWASP Top 10 for LLM Applications (2025), mapped to 35
+distinct obligations.
+
+OWASP is organised by **threat**; this catalog is organised by **application
+shape**. The mapping is many-to-many by construction, and that is the value — a
+single threat lands on several obligations across several archetypes, which is
+exactly what a threat list alone cannot tell an architect. `LLM01` alone
+resolves to three separate injection vectors: direct, via retrieved documents,
+and via tool output.
+
+Every mapping records a `relation` — `tests-for`, `evidence-for` or `partial` —
+and the linter rejects any other value. The field exists to prevent the claim
+that discredits a crosswalk fastest: that a test obligation is *equivalent* to a
+governance control rather than evidence a process operated.
+
+### Added — three obligations the crosswalk found missing
+
+- `AAC-0106` The system prompt is not a security boundary (`LLM07`, which had
+  no obligation at all). Deliberately two halves: extraction is tested, and
+  separately no capability may depend on the prompt staying hidden. Testing
+  extraction alone measures the wrong thing, because the prompt will eventually
+  leak.
+- `AAC-0107` Serving artifacts are the ones that were evaluated (`LLM03`).
+  Model version, adapters, embedding model, prompt revision and third-party
+  components pinned by identifier or digest, verified at the release gate.
+- `AAC-0108` Corpus ingestion is controlled and auditable (`LLM04`, A3). One
+  poisoned document silently changes answers for every user who retrieves it,
+  and no generation-side evaluation will surface it.
+
+`LLM03` and `LLM04` remain marked `partial`: training-pipeline and training-data
+concerns are model-level rather than application-level and stay out of scope per
+`docs/NON-GOALS.md`. Saying so in the crosswalk is more useful than claiming
+coverage we do not have.
+
+### Changed
+
+- Linter validates crosswalk `relation` values, requires every entry to map at
+  least one case, and reports per-framework coverage
+- Renderer emits a crosswalk section per framework
 
 ## [0.4.0] — 2026-08-16
 
@@ -187,7 +240,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...HEAD
+[0.5.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.1.0...v0.2.0

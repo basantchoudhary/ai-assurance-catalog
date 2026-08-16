@@ -1,17 +1,19 @@
 # Crosswalks
 
-Mappings from catalog identifiers to external frameworks. Empty until Phase 1.
+Mappings from catalog identifiers to external frameworks.
+
+**Done:** `owasp-llm.yaml` — all 10 entries, mapped to 35 obligations.
 
 Crosswalks release **out of band** from the catalog. An external framework
 revising its own identifiers must never force a version bump in `catalog/` —
 that decoupling is what keeps obligations citable across years while the
 frameworks around them churn.
 
-## Planned
+## Status
 
 | File | Framework | Legal shape |
 |---|---|---|
-| `owasp-llm.yaml` | OWASP Top 10 for LLM Applications | Creative Commons — may quote |
+| ~~`owasp-llm.yaml`~~ | OWASP Top 10 for LLM Applications — **done** | Creative Commons — may quote |
 | `nist-ai-rmf.yaml` | NIST AI RMF + Generative AI Profile | US government, freely redistributable |
 | `iso-42001.yaml` | ISO/IEC 42001 Annex A | **Copyrighted and paywalled — cite clause identifiers only, never reproduce control text** |
 | `eu-ai-act.yaml` | EU AI Act | Official Journal, public — may quote |
@@ -51,7 +53,7 @@ whole crosswalk, and they will be right to.
 ## Why do this early
 
 Running the catalog against an established threat list is free coverage
-validation. The first OWASP pass against draft 0.1 already surfaced three
-missing obligations — system prompt leakage, model and artifact supply chain,
-and retrieval-corpus poisoning. They are tracked in
-[CHANGELOG.md](../CHANGELOG.md) under Unreleased.
+validation. The OWASP pass surfaced three missing obligations — system prompt leakage,
+artifact provenance, and retrieval-corpus poisoning. All three are now written
+as `AAC-0106`, `AAC-0107` and `AAC-0108`, and the crosswalk entries that found
+them record that provenance in their notes.
