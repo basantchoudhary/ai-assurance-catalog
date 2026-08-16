@@ -9,8 +9,8 @@ ship. A quarter with no changes ships a release note saying so.
 
 ## [Unreleased]
 
-Phase 1: crosswalks to OWASP LLM Top 10, NIST AI RMF, ISO/IEC 42001 and the
-EU AI Act.
+**Phase 1 — remaining crosswalks:** NIST AI RMF, ISO/IEC 42001, EU AI Act.
+OWASP shipped in 0.5.0.
 
 **Phase 2 — coverage report schema.** This is the last specification artifact.
 Adapters emit *into* that format, so it must exist before Phase 3 can begin.
