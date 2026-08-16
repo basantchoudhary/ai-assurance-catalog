@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/coverage-report.schema.json",
+  "title": "AAC Coverage Report",
+  "description": "A machine-readable conformance claim: which obligations a system covers, how, and with what evidence. Emitted by CI as a byproduct of testing — never hand-assembled — and consumed by release reviews, GRC platforms and auditors. See docs/REPORT.md for the semantics of a claim.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["report_version", "catalog_version", "generated_at", "subject", "results"],
+  "properties": {
+    "report_version": {
+      "const": "1.0",
+      "description": "Version of THIS report format. Distinct from catalog_version — the format and the obligations evolve independently."
+    },
+    "catalog_version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+      "description": "Catalog release this claim is made against. Required: without it the set of obligations being claimed is undefined and the report is not interpretable."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When this report was produced. A report generated as a byproduct of a pipeline run is stronger evidence than one assembled for a review, and the timestamp series across commits is what demonstrates a control operates continuously."
+    },
+    "profile": {
+      "type": "string",
+      "description": "Named conformance profile, if the adopter uses one. Absent means the full applicable set."
+    },
+    "subject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "version", "archetypes"],
+      "description": "What is being claimed about. The archetype classification determines which obligations apply, so a coverage count without it is meaningless.",
+      "properties": {
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": "string", "minLength": 1, "description": "Release tag, commit SHA or build identifier." },
+        "archetypes": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "pattern": "^A([1-9]|10)$" },
+          "description": "Every archetype present in the system. Most real systems are two or three composed."
+        },
+        "description": { "type": "string" },
+        "repository": { "type": "string" }
+      }
+    },
+    "results": {
+      "type": "array",
+      "minItems": 1,
+      "description": "One entry per APPLICABLE obligation. Silence is not a permitted answer — an obligation with no entry is indistinguishable from one nobody considered, which is exactly the ambiguity this format exists to remove. Use status 'not-covered' to say so honestly.",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["case", "status"],
+        "properties": {
+          "case": { "type": "string", "pattern": "^AAC-[0-9]{4}$" },
+          "status": {
+            "enum": ["covered", "not-covered", "accepted-risk", "not-applicable"],
+            "description": "Whether a check EXISTS. Distinct from outcome, which is whether it passed — see docs/REPORT.md. 'not-covered' is the honest default for work not yet done."
+          },
+          "outcome": {
+            "enum": ["pass", "fail", "error", "unknown"],
+            "description": "Result of the most recent run. Only meaningful when status is 'covered'. A covered obligation whose outcome is 'fail' is a working control reporting a real problem — materially different from an obligation nobody checks."
+          },
+          "mechanisms": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^M[1-7]$" },
+            "description": "Mechanisms actually used, which need not match the case's advisory tags."
+          },
+          "stages": {
+            "type": "array",
+            "uniqueItems": true,
+            "items": { "type": "string", "pattern": "^S[1-6]$" }
+          },
+          "evidence": {
+            "type": "array",
+            "description": "Pointers a reviewer can follow. Required when status is 'covered' — a coverage claim with nothing behind it is an assertion, not evidence.",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["type", "ref"],
+              "properties": {
+                "type": {
+                  "enum": ["test", "experiment", "trace-query", "policy", "annotation", "document"],
+                  "description": "'test' a runner identifier; 'experiment' an eval platform run; 'trace-query' a saved query over telemetry; 'policy' a gateway or guardrail rule; 'annotation' a human review batch; 'document' a sign-off record."
+                },
+                "ref": { "type": "string", "minLength": 1 },
+                "url": { "type": "string" },
+                "at": { "type": "string", "format": "date-time" }
+              }
+            }
+          },
+          "owner": {
+            "type": "string",
+            "description": "Accountable person or team. Required for accepted-risk."
+          },
+          "rationale": {
+            "type": "string",
+            "minLength": 10,
+            "description": "Why this status. Required for accepted-risk and not-applicable."
+          },
+          "review_by": {
+            "type": "string",
+            "format": "date",
+            "description": "When an accepted risk is next reviewed. Required for accepted-risk: an acceptance without an expiry is an omission wearing a process."
+          },
+          "note": { "type": "string" }
+        },
+        "allOf": [
+          {
+            "if": { "properties": { "status": { "const": "covered" } }, "required": ["status"] },
+            "then": { "required": ["evidence", "mechanisms"] }
+          },
+          {
+            "if": { "properties": { "status": { "const": "accepted-risk" } }, "required": ["status"] },
+            "then": { "required": ["owner", "rationale", "review_by"] }
+          },
+          {
+            "if": { "properties": { "status": { "const": "not-applicable" } }, "required": ["status"] },
+            "then": { "required": ["rationale"] }
+          }
+        ]
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "description": "Optional and derived. A validator recomputes these from results and rejects a mismatch, so a report cannot claim a summary its own contents do not support.",
+      "properties": {
+        "applicable": { "type": "integer", "minimum": 0 },
+        "covered": { "type": "integer", "minimum": 0 },
+        "not_covered": { "type": "integer", "minimum": 0 },
+        "accepted_risk": { "type": "integer", "minimum": 0 },
+        "not_applicable": { "type": "integer", "minimum": 0 },
+        "failing": { "type": "integer", "minimum": 0 },
+        "uncovered_musts": { "type": "integer", "minimum": 0 },
+        "uncovered_gates": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

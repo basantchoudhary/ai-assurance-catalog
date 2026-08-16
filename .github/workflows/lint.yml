@@ -18,6 +18,10 @@ jobs:
       # Schema, identifier permanence, and the no-product-names discipline.
       - run: npm run lint
 
+      # The example report must stay valid against the current catalog — it is
+      # the executable specification of the report format.
+      - run: npm run validate-report -- examples/coverage-report.example.json
+
       # The site is a build artifact. If a rebuild produces a diff, someone
       # edited generated output instead of the catalog it comes from.
       - name: site/ is in sync with catalog/

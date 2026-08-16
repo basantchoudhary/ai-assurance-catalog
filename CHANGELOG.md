@@ -12,14 +12,62 @@ ship. A quarter with no changes ships a release note saying so.
 **Phase 1 — remaining crosswalks:** NIST AI RMF, ISO/IEC 42001, EU AI Act.
 OWASP shipped in 0.5.0.
 
-**Phase 2 — coverage report schema.** This is the last specification artifact.
-Adapters emit *into* that format, so it must exist before Phase 3 can begin.
+**Phase 3 — adapters.** First functional code, all of it translation: read
+another tool's output, emit a coverage report. Two independent adapters must
+both produce a valid report before `1.0.0`, per
+[docs/VERSIONING.md](docs/VERSIONING.md), so junit and promptfoo get built
+together rather than sequentially.
 
-Content work is deliberately paused after Phase 2. The catalog grew 90 → 108
-across five releases with no running report yet, which is content accretion —
-`AACP-0002`, in our own catalogue. Remaining obligations (the two pattern gaps,
-thin `latency` coverage) are additive and invalidate nothing, so they wait until
-Phases 3 and 4 have produced a report with real failures in it.
+**Content work is paused**, as recorded in 0.5.0. The remaining obligations
+(two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
+They wait until Phase 4 has produced a report with real failures in it.
+
+## [0.6.0] — 2026-08-16
+
+**The specification is complete.** Phases 0–2 done; everything after this is
+translation code and proof.
+
+### Added — the coverage report
+
+- `schema/coverage-report.schema.json` — the machine-readable conformance claim
+- `docs/REPORT.md` — what a claim means, and what it deliberately is not
+- `examples/coverage-report.example.json` — a complete, deliberately imperfect
+  report; 43 obligations for an `A1`+`A2` subject
+- `tools/validate-report.js` and `npm run validate-report`
+
+### Three decisions in the format
+
+**Coverage and outcome are separate fields.** `status` answers *does a check
+exist* — the auditor's question. `outcome` answers *did it pass* — the release
+gate's question. A `covered` obligation with `outcome: fail` is a working
+control reporting a real problem, materially better than one nobody checks.
+Merging them into a single red/green field would make the healthier of the two
+look worse.
+
+**Silence is not an answer.** Every applicable obligation needs a row, and the
+validator fails a report that omits one. `not-covered` is a first-class status,
+because the alternative is people quietly dropping the rows they cannot answer.
+
+**The summary cannot lie.** `summary` is derived; the validator recomputes every
+field from `results` and rejects a mismatch. For an artifact intended to reach a
+release review or an auditor, a headline its own rows do not support is the
+failure mode worth engineering against.
+
+The validator deliberately exits 0 with uncovered MUSTs present. Whether a claim
+is good enough to ship belongs to the release owner; the tool's job is to make
+the numbers true and legible, not to make the judgement.
+
+### Fixed
+
+- `docs/REALIZATION.md` was referenced by the trailer comment in **all 108**
+  catalog files and did not exist. Written: what the advisory tags mean, why the
+  axes stay orthogonal, and how to choose a mechanism and a stage.
+
+### Changed
+
+- CI validates the example report on every push, so it stays an executable
+  specification of the format rather than documentation that drifts
+- `npm test` runs lint plus report validation
 
 ## [0.5.0] — 2026-08-16
 
@@ -240,7 +288,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.2.0...v0.3.0

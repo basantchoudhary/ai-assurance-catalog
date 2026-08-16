@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.5.0** — identifiers are stable from the first tagged
+Status: **working draft 0.6.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -88,11 +88,12 @@ deprecation rules.
 ```
 catalog/        108 cases, one YAML file each — the normative master
 taxonomy/       archetypes, mechanisms, stages, dimensions, levels
-schema/         JSON Schema for a case
+schema/         JSON Schema for a case, a pattern, and a coverage report
 patterns/       informative anti-patterns mapping into the cases that catch them
 crosswalks/     mappings to OWASP, NIST AI RMF, ISO 42001, EU AI Act
 tools/          linter and renderer — format only, never evaluation
-docs/           identifier, versioning and scope policy
+examples/       a complete, deliberately imperfect coverage report
+docs/           identifier, versioning, realization, report and scope policy
 ```
 
 The rendered site is a build artifact. **The YAML is the master**; never edit
@@ -102,20 +103,23 @@ generated output.
 npm install
 npm run lint      # schema + identifier + discipline checks
 npm run render    # YAML -> site
+npm run validate-report -- examples/coverage-report.example.json
 ```
 
 ## Roadmap
 
 - [x] **Phase 0** — normative core: catalog, schema, identifier policy, renderer
 - [~] **Phase 1** — crosswalks: OWASP LLM Top 10 done; NIST AI RMF, ISO 42001, EU AI Act to go
-- [ ] **Phase 2** — coverage report schema (the artifact an auditor consumes)
+- [x] **Phase 2** — coverage report schema (the artifact an auditor consumes)
 - [ ] **Phase 3** — adapters: junit, promptfoo, DeepEval, eval-platform exports
 - [ ] **Phase 4** — public reference implementation emitting a real report, failures included
 - [ ] **Phase 5** — ecosystem plugs: OTel attribute convention, CI action, badge
 
-Phases 0–2 are pure specification. Phase 3 is the first functional code, and all
-of it is translation — reading other tools' output and emitting the report
-format. Nothing in this repository will ever evaluate anything itself.
+**Phases 0–2 are complete, and they are the whole specification.** Phase 3 is
+the first functional code, and all of it is translation — reading other tools'
+output and emitting the report format defined in
+[docs/REPORT.md](docs/REPORT.md). Nothing in this repository will ever evaluate
+anything itself.
 
 ## Licence
 
