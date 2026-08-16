@@ -47,6 +47,33 @@ tests:
     metadata: { aac: AAC-0001 }
 ```
 
+**A mapping file**, for suites that predate the catalog and cannot be annotated
+in one diff:
+
+```yaml
+# aac.map.yaml
+AAC-0055:
+  - tests/test_agent_loop.py::test_step_limit_is_a_distinct_failure
+  - tests/test_eval.py::test_max_steps_catches_flailing
+```
+
+```yaml
+sources:
+  - adapter: junit
+    path: reports/junit.xml
+    map: aac.map.yaml
+```
+
+This is the zero-friction on-ramp: no test changes, no plugin, a claim on the
+first day. It is genuinely **weaker evidence** than an in-band marker, because a
+renamed test breaks the link silently — so every pattern that matches no test is
+reported. Treat those warnings as errors, or the mapping rots into a claim about
+tests that no longer exist.
+
+Parametrised tests are handled: a pattern naming the function matches every
+parametrisation of it (`test_x[case a]`, `test_x[case b]`), and worst-outcome-
+wins folds them into one verdict.
+
 ## Per-test overrides
 
 An adapter cannot infer the *mechanism* from a test result — a passing pytest

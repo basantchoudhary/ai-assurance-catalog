@@ -57,10 +57,15 @@ for (const src of cfg.sources || []) {
     continue;
   }
   const raw = fs.readFileSync(file, "utf8");
-  for (const r of adapter.extract(raw, src)) {
+  // A mapping file lets a suite that cannot be annotated yet still make a
+  // claim. Weaker evidence than an in-band marker, so misses are reported.
+  const opts = { ...src };
+  if (src.map) opts.mapping = yaml.load(fs.readFileSync(path.resolve(cfgDir, src.map), "utf8"));
+  for (const r of adapter.extract(raw, opts)) {
     if (!collected.has(r.case)) collected.set(r.case, []);
     collected.get(r.case).push(r);
   }
+  for (const w of adapter.extract.warnings || []) warn.push(`${src.adapter}: ${w}`);
 }
 
 // ---- declarations: accepted risk, not-applicable, manual coverage ----

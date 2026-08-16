@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.7.0** — identifiers are stable from the first tagged
+Status: **working draft 0.8.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -114,7 +114,7 @@ npm run validate-report -- examples/coverage-report.example.json
 - [~] **Phase 1** — crosswalks: OWASP LLM Top 10 done; NIST AI RMF, ISO 42001, EU AI Act to go
 - [x] **Phase 2** — coverage report schema (the artifact an auditor consumes)
 - [x] **Phase 3** — adapters: junit and promptfoo shipped; DeepEval and eval-platform exports to go
-- [ ] **Phase 4** — public reference implementation emitting a real report, failures included
+- [x] **Phase 4** — reference implementation: [spark-cost-agent](https://github.com/basantchoudhary/spark-cost-agent/tree/main/aac) emits a real report from its own suite, 23/50 covered
 - [ ] **Phase 5** — ecosystem plugs: OTel attribute convention, CI action, badge
 
 **Phases 0–2 are the whole specification and are complete.** Phase 3 code is

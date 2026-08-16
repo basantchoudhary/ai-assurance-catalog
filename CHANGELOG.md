@@ -12,13 +12,67 @@ ship. A quarter with no changes ships a release note saying so.
 **Phase 1 — remaining crosswalks:** NIST AI RMF, ISO/IEC 42001, EU AI Act.
 OWASP shipped in 0.5.0.
 
-**Phase 4 — reference implementation.** A real repository emitting a real
-report from real CI, failures included. This is the artifact everything else
-exists to produce, and the one that decides whether any of this gets adopted.
+**Phase 5 — ecosystem plugs.** An OpenTelemetry span-attribute convention for
+`aac.case_id`, a CI action, a coverage badge. Plus the remaining crosswalks.
 
 **Content work is paused**, as recorded in 0.5.0. The remaining obligations
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
+
+## [0.8.0] — 2026-08-16
+
+Phase 4. A real repository now emits a real report from its own test suite.
+
+### Reference implementation
+
+[spark-cost-agent](https://github.com/basantchoudhary/spark-cost-agent/tree/main/aac)
+— a hand-written tool-calling agent over Spark event logs and Delta transaction
+logs, classified `A6` + `A10`, with 172 offline tests.
+
+```
+spark-cost-agent stage-8-online-eval  [A6 A10]  catalog 0.7.0
+  applicable      50
+  covered         23
+  accepted risk   3
+  not applicable  5
+  not covered     19
+  uncovered MUSTs 12
+  uncovered gates 10
+```
+
+**Nineteen blind spots, and that is the useful part.** A first real subject
+producing an all-green report would have meant the catalog was too easy or the
+mapping was dishonest. The uncovered set clusters informatively: multi-model
+evaluation (several providers are selectable by environment variable, but the
+eval suite only ever runs against one), release gating on cost, and runtime
+enforcement.
+
+`A2` was deliberately not claimed for that subject — its product is prose with
+grounded figures, not a typed record consumed by code. Inflating the archetype
+list would have inflated the applicable set with obligations it does not owe,
+which is the easiest way to make a coverage number meaningless.
+
+### Added — mapping files
+
+A `map:` option on the junit source, so a suite that predates the catalog can
+make a claim without annotating 40 tests in one diff. This is the on-ramp most
+adopters actually need.
+
+It is weaker evidence than an in-band marker and the tooling says so: every
+mapping pattern that matches no test is reported. That is what makes a rename
+loud instead of silent.
+
+### Fixed — both found by running against real output
+
+- The junit reference normaliser collapsed `/` and `.` but not `::`, so **no**
+  mapping pattern ever matched. Caught immediately by the unmatched-pattern
+  warning, which found its own bug on first use.
+- Parametrised tests were unmatchable, because pytest appends `[case]` to the
+  name. A mapping entry naming the function now matches every parametrisation,
+  with worst-outcome-wins folding them into one verdict.
+
+Neither would have surfaced against synthetic fixtures. That is the argument for
+Phase 4 existing at all.
 
 ## [0.7.0] — 2026-08-16
 
@@ -346,7 +400,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...HEAD
+[0.8.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...v0.5.0

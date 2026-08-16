@@ -15,8 +15,13 @@
  *   2. An identifier anywhere in the test or class name:
  *        def test_aac_0055_max_steps(): ...
  *
- * Both forms accept several identifiers for one test. The property form is
- * preferred because a rename cannot silently break the link.
+ *   3. An external mapping file, for suites that cannot be annotated yet:
+ *        AAC-0055:
+ *          - tests/test_agent_loop.py::test_step_limit_is_a_distinct_failure
+ *
+ * Both in-band forms are preferred, because a rename cannot silently break the
+ * link. A mapping file has exactly that weakness, so every pattern that matches
+ * no test is reported — that is what makes a rename loud instead of silent.
  */
 const { XMLParser } = require("fast-xml-parser");
 
@@ -31,7 +36,30 @@ const ids = (s) => {
 
 const arr = (x) => (x === undefined ? [] : Array.isArray(x) ? x : [x]);
 
+/*
+ * Normalise a test reference so a mapping file can be written the way a human
+ * refers to a test — `tests/test_loop.py::test_thing` — while junit reports it
+ * as `tests.test_loop` + `test_thing`.
+ */
+const norm = (s) =>
+  String(s).replace(/\.py\b/g, "").replace(/[/.:]+/g, ".").replace(/^\.+|\.+$/g, "").toLowerCase();
+
 function extract(xml, opts = {}) {
+  // mapping: { "AAC-0055": ["tests/test_x.py::test_y", ...] }
+  const mapping = opts.mapping || null;
+  const byRef = new Map();
+  const unmatched = new Set();
+  if (mapping) {
+    for (const [id, pats] of Object.entries(mapping)) {
+      for (const p of pats) {
+        const key = norm(p);
+        if (!byRef.has(key)) byRef.set(key, []);
+        byRef.get(key).push(id);
+        unmatched.add(key);
+      }
+    }
+  }
+
   const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "@" });
   const doc = parser.parse(xml);
 
@@ -45,11 +73,24 @@ function extract(xml, opts = {}) {
       const cls = tc["@classname"] || "";
       const props = arr(tc.properties && tc.properties.property);
 
-      // Property form wins; fall back to scanning identifiers in the names.
+      // Property form wins, then identifiers in the name, then the mapping file.
       const declared = props.filter((p) => (p["@name"] || "").toLowerCase() === "aac");
-      const cases = declared.length
+      const inband = declared.length
         ? declared.flatMap((p) => ids(p["@value"]))
         : [...new Set([...ids(name), ...ids(cls)])];
+
+      /*
+       * Parametrised tests carry the case in the name — `test_x[not json]` —
+       * so a mapping entry naming the function must match every parametrisation
+       * of it. Worst-outcome-wins then folds them into one verdict.
+       */
+      const key = norm(`${cls}.${name}`);
+      const base = norm(`${cls}.${name.replace(/\[.*\]$/s, "")}`);
+      const mapped = [...new Set([...(byRef.get(key) || []), ...(base !== key ? byRef.get(base) || [] : [])])];
+      if (byRef.has(key)) unmatched.delete(key);
+      if (byRef.has(base)) unmatched.delete(base);
+
+      const cases = [...new Set([...inband, ...mapped])];
       if (!cases.length) continue;
 
       // Per-test overrides, so a repository can mix mechanisms in one suite.
@@ -78,6 +119,13 @@ function extract(xml, opts = {}) {
         });
       }
     }
+  }
+  // A mapping entry that matched nothing is almost always a renamed test. Left
+  // silent it would read as lost coverage with no explanation.
+  if (unmatched.size) {
+    extract.warnings = [...unmatched].map((k) => `mapping pattern matched no test: ${k}`);
+  } else {
+    extract.warnings = [];
   }
   return results;
 }
