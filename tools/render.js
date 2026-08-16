@@ -174,6 +174,16 @@ td.k{font-family:var(--mono);font-size:12.5px;color:var(--ink);white-space:nowra
 .chip{font-family:var(--mono);font-size:11px;padding:2px 7px;border-radius:2px;background:var(--accent-soft);color:var(--accent);border:1px solid transparent;cursor:help;white-space:nowrap}
 .chip.n{background:var(--sunk);color:var(--ink-2);border-color:var(--rule)}
 .chip.gate{background:var(--must-bg);color:var(--must)}
+.chip.howchip{background:transparent;border-color:var(--accent);color:var(--accent);cursor:default}
+.apbar{display:flex;flex-wrap:wrap;gap:6px;margin:22px 0 4px}
+.apbar button{font-family:var(--mono);font-size:11.5px;cursor:pointer;background:var(--surface);color:var(--ink-2);border:1px solid var(--rule);padding:6px 11px;border-radius:2px}
+.apbar button:hover{border-color:var(--rule-2);color:var(--ink)}
+.apbar button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+#buildtbl table{min-width:900px}
+#buildtbl td.cs{white-space:nowrap;font-family:var(--mono);font-size:12px;color:var(--ink);font-weight:600;vertical-align:top}
+#buildtbl td.cs span{display:block;font-family:var(--serif);font-size:13px;font-weight:400;color:var(--ink-3);white-space:normal;max-width:22ch;margin-top:3px}
+#buildtbl tr.newcase td{border-top:2px solid var(--rule-2)}
+#buildtbl .tl{font-family:var(--mono);font-size:11.5px;color:var(--ink-3);display:block;margin-top:4px}
 .how{margin-top:12px;border-top:1px dashed var(--rule);padding-top:10px}
 .how summary{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--accent);cursor:pointer;list-style:none}
 .how summary::-webkit-details-marker{display:none}
@@ -217,6 +227,8 @@ document.getElementById("m-arch").textContent = D.archetypes.length;
 document.getElementById("m-cases").textContent = D.cases.length;
 document.getElementById("m-core").textContent = core.length;
 document.getElementById("m-gate").textContent = D.cases.filter(c => c.gate).length;
+document.getElementById("m-how").textContent =
+  Object.values(D.realizations||{}).reduce((n,e)=>n+e.options.length,0);
 
 document.getElementById("arch-list").innerHTML = D.archetypes.map(a => {
   const n = D.cases.filter(c => !c.core && c.arch.includes(a.id)).length;
@@ -232,7 +244,8 @@ tabs.innerHTML = [\`<button role="tab" data-a="ALL" aria-selected="true">All \${
   .concat(D.archetypes.map(a => \`<button role="tab" data-a="\${a.id}" aria-selected="false">\${a.id} · \${esc(a.name)}</button>\`)).join("");
 
 let sel = "ALL";
-const q = document.getElementById("q"), mustonly = document.getElementById("mustonly"), gateonly = document.getElementById("gateonly");
+const q = document.getElementById("q"), mustonly = document.getElementById("mustonly"),
+      gateonly = document.getElementById("gateonly"), howonly = document.getElementById("howonly");
 const chip = (cls, txt, title) => \`<span class="chip \${cls}" title="\${esc(title)}">\${esc(txt)}</span>\`;
 
 const APPROACH = Object.fromEntries((D.approaches||[]).map(a => [a.id, a]));
@@ -255,6 +268,7 @@ function caseHTML(c){
       <span class="cid">\${c.id}</span>
       \${c.core ? chip("","core","Owed by every archetype") : c.arch.map(a => chip("", a, ARCH_NAME[a])).join("")}
       <span class="lvl \${c.level}">\${c.level}</span><span class="dim">\${c.dim}</span>
+      \${(D.realizations||{})[c.id] ? \`<span class="chip howchip" title="Concrete build options are listed below">\${(D.realizations)[c.id].options.length} ways to build</span>\` : ""}
       \${c.legacy ? \`<span class="legacy">was \${c.legacy}</span>\` : ""}
     </div>
     <h5>\${esc(c.title)}</h5><p>\${esc(c.text)}</p>\${howHTML(c.id)}</div>
@@ -271,6 +285,7 @@ function render(){
   const pass = c => {
     if (mustonly.checked && c.level !== "MUST") return false;
     if (gateonly.checked && !c.gate) return false;
+    if (howonly.checked && !(D.realizations||{})[c.id]) return false;
     if (term && !(c.id + " " + c.title + " " + c.text + " " + c.dim + " " + c.tool + " " + (c.legacy||"")).toLowerCase().includes(term)) return false;
     return true;
   };
@@ -301,8 +316,44 @@ tabs.addEventListener("click", e => {
   [...tabs.querySelectorAll("button")].forEach(x => x.setAttribute("aria-selected", x === b ? "true" : "false"));
   render();
 });
-[q, mustonly, gateonly].forEach(el => el.addEventListener("input", render));
+[q, mustonly, gateonly, howonly].forEach(el => el.addEventListener("input", render));
 render();
+
+// ---- build-options table, filterable by approach ----
+const CASEBY = Object.fromEntries(D.cases.map(c => [c.id, c]));
+const APS = (D.approaches||[]).map(a => a.id);
+let apSel = "ALL";
+const apbar = document.getElementById("apbar");
+if (apbar) {
+  const count = a => Object.values(D.realizations||{}).reduce((n,e)=>n+e.options.filter(o=>a==="ALL"||o.approach===a).length,0);
+  apbar.innerHTML = [\`<button data-ap="ALL" aria-pressed="true">All \${count("ALL")}</button>\`]
+    .concat(APS.map(a => \`<button data-ap="\${a}" aria-pressed="false">\${esc(a)} · \${count(a)}</button>\`)).join("");
+  apbar.addEventListener("click", e => {
+    const b = e.target.closest("button[data-ap]"); if (!b) return;
+    apSel = b.dataset.ap;
+    [...apbar.querySelectorAll("button")].forEach(x => x.setAttribute("aria-pressed", x === b ? "true" : "false"));
+    renderBuild();
+  });
+}
+function renderBuild(){
+  const el = document.getElementById("buildtbl"); if (!el) return;
+  let body = "";
+  for (const [id, entry] of Object.entries(D.realizations||{})) {
+    const opts = entry.options.filter(o => apSel === "ALL" || o.approach === apSel);
+    if (!opts.length) continue;
+    const c = CASEBY[id] || {};
+    opts.forEach((o, i) => {
+      body += \`<tr class="\${i===0?"newcase":""}">
+        <td class="cs">\${i===0 ? id + \`<span>\${esc(c.title||"")}</span>\` : ""}</td>
+        <td><span class="chip">\${esc(o.approach)}</span></td>
+        <td>\${esc(o.how)}<span class="tl">\${esc(o.tools.join(" · "))} · \${o.mechanism} \${esc(MECH_LABEL[o.mechanism]||"")}</span>
+          \${o.caveat ? \`<div style="margin-top:5px;font-size:13.5px;color:var(--ink-3)">\${esc(o.caveat)}</div>\` : ""}</td>
+      </tr>\`;
+    });
+  }
+  el.innerHTML = \`<table><thead><tr><th style="width:210px">Obligation</th><th style="width:104px">Approach</th><th>What you actually do</th></tr></thead><tbody>\${body}</tbody></table>\`;
+}
+renderBuild();
 
 const rows = D.archetypes.map(a => [a.id + " " + a.name, D.cases.filter(c => !c.core && c.arch.includes(a.id))]);
 rows.push(["CORE (all shapes)", core]);
@@ -330,6 +381,7 @@ const html = `<title>AI Assurance Catalog</title>
     <div><dt>Obligations</dt><dd id="m-cases">—</dd></div>
     <div><dt>Core (all shapes)</dt><dd id="m-core">—</dd></div>
     <div><dt>Release gates</dt><dd id="m-gate">—</dd></div>
+    <div><dt>Build options</dt><dd id="m-how">—</dd></div>
   </dl>
 </div></header>
 <main>
@@ -405,8 +457,18 @@ ${crosswalks.map((cw) => `<section><div class="wrap">
   </tbody></table></div>
 </div></section>`).join("")}
 
+<section id="build"><div class="wrap">
+  <div class="prose"><span class="snum">Section 6 — How to build it</span>
+  <h2>From the obligation to the thing you actually write</h2>
+  <p class="lede">Informative. Every obligation is reachable several ways, at very different cost, effort and lock-in — so each is listed with the trade-off it makes rather than a recommendation.</p>
+  <p><strong>Approach</strong> answers <em>who provides the machinery</em>, and is orthogonal to mechanism and stage. Two of the six are worth knowing about before you read the rest: <code>gateway</code> is the only approach that can <em>prevent</em> rather than detect, and the only one that covers calls your application code forgot to route through the wrapper. <code>in-house</code> is chronically under-considered and frequently strongest — several entries below are a dozen lines and beat anything purchasable, because they assert what you meant rather than what a product happens to measure.</p>
+  <p><strong>Verify every product claim before relying on it.</strong> These describe the kind of capability a category of product typically offered as of the date on each file. Names, features and pricing change without notice, and some entries are already wrong.</p></div>
+  <div class="apbar" id="apbar"></div>
+  <div class="tbl-scroll" id="buildtbl"></div>
+</div></section>
+
 <section><div class="wrap">
-  <div class="prose"><span class="snum">Section 6 — Patterns</span>
+  <div class="prose"><span class="snum">Section 7 — Patterns</span>
   <h2>Why these obligations exist</h2>
   <p class="lede">Informative. ${patterns.length} known failure shapes, each terminating in the obligations that would surface it — or declaring itself a gap.</p>
   <p>A pattern is a diagnosis, not an obligation. Keeping the two apart is what lets a case statement stay short: the pattern carries the war story so the obligation does not have to. Nothing in this section is required for conformance.</p>
@@ -426,7 +488,7 @@ ${crosswalks.map((cw) => `<section><div class="wrap">
 </div></section>
 
 <section><div class="wrap prose">
-  <span class="snum">Section 7 — Using it</span>
+  <span class="snum">Section 8 — Using it</span>
   <h2>Turning the catalog into a test plan</h2>
   <ul class="plain">
     <li><strong>Classify.</strong> Decompose the system into archetypes — most are two or three. Write the classification down; it is the assumption everything rests on and the thing most likely to be wrong.</li>

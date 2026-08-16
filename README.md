@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.11.0** — identifiers are stable from the first tagged
+Status: **working draft 0.11.1** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -80,7 +80,8 @@ actually do?* — with several options per obligation across six approaches:
 | `cloud-native` | managed services — Bedrock Guardrails, Azure AI Content Safety, Cloud DLP |
 | `human` | annotation and review, which calibrates everything model-graded |
 
-**163 concrete options across 60 obligations** — the 32 core ones plus the three
+Browse them in **Section 6 of the site**, filterable by approach — or read the
+YAML directly. **163 concrete options across 60 obligations** — the 32 core ones plus the three
 archetypes where "how would I even test that?" bites hardest: `A6` tool-using
 agents, `A10` judges and classifiers, `A3` grounded answerers. This is the
 **only** layer where products may be named, it versions separately, and it

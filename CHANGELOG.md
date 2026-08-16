@@ -18,6 +18,20 @@ Remaining crosswalks: NIST AI RMF, ISO/IEC 42001, EU AI Act.
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
 
+## [0.11.1] — 2026-08-16
+
+Discoverability fix. The build options existed but were effectively hidden:
+collapsed inside individual case cards, with nothing indicating which cases had
+them and no way to browse them together. Content nobody can find is content
+that does not exist.
+
+- New **Section 6, "How to build it"** — all 163 options in one browsable
+  table, **filterable by approach**, so "what could a gateway do for me?" is one
+  click rather than 60 expansions
+- Cases carrying options now show an `N ways to build` chip in the catalog
+- A **Has build options** filter in the catalog controls
+- Build-option count added to the masthead
+
 ## [0.11.0] — 2026-08-16
 
 Realizations for the three archetypes where the "how would I even test that?"
@@ -532,7 +546,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.1...HEAD
+[0.11.1]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.0...v0.11.1
 [0.11.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.10.0...v0.11.0
 [0.10.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...v0.9.0
