@@ -12,12 +12,49 @@ ship. A quarter with no changes ships a release note saying so.
 **Phase 1 — remaining crosswalks:** NIST AI RMF, ISO/IEC 42001, EU AI Act.
 OWASP shipped in 0.5.0.
 
-**Phase 5 — ecosystem plugs.** An OpenTelemetry span-attribute convention for
-`aac.case_id`, a CI action, a coverage badge. Plus the remaining crosswalks.
+Remaining crosswalks: NIST AI RMF, ISO/IEC 42001, EU AI Act.
 
 **Content work is paused**, as recorded in 0.5.0. The remaining obligations
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
+
+## [0.9.0] — 2026-08-16
+
+Phase 5, which completes the roadmap. Everything the project set out to build
+now exists end to end: catalog, crosswalk, report format, adapters, a real
+reference implementation, and the plugs that let someone else adopt it.
+
+### Added
+
+- `docs/OTEL.md` — the `aac.case_id` span-attribute convention
+- `action.yml` — a GitHub Action for adopters
+- `tools/badge.js` and `npm run badge` — shields.io endpoint JSON
+
+### The span attribute
+
+A coverage report says what CI verified. A span attribute says what the running
+system verified, on this request. `aac.*` is additive and conflicts with nothing
+— `gen_ai.*` describes what the call was, `aac.*` describes which obligation it
+discharged, and a system emits both without either knowing about the other.
+
+Telemetry schemas belong to OpenTelemetry, so this is a convention for using
+their schema rather than an extension of it, and the document says plainly that
+it is proposed and unilateral. Demonstrate use, then propose — that is the order
+that works for conventions.
+
+### Two defaults worth stating
+
+The **action does not fail a build by default** when a MUST is uncovered. It
+warns. Whether a claim is good enough to ship is the release owner's decision,
+and an action that blocked on day one would simply not be adopted. Turn
+`fail-on-uncovered-must` on once your baseline is where you want it, so it
+ratchets.
+
+The **badge colour is driven by uncovered MUSTs, not by the ratio**. A system at
+90% coverage missing a mandatory obligation is in a worse position than one at
+60% missing none, and a badge rewarding the ratio would say the opposite. The
+reference implementation currently earns a red badge reading
+`23/50 · 12 MUST uncovered`, which is correct and is the point.
 
 ## [0.8.0] — 2026-08-16
 
@@ -400,7 +437,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...HEAD
+[0.9.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...v0.6.0

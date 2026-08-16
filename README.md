@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.8.0** — identifiers are stable from the first tagged
+Status: **working draft 0.9.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -91,7 +91,8 @@ taxonomy/       archetypes, mechanisms, stages, dimensions, levels
 schema/         JSON Schema for a case, a pattern, and a coverage report
 patterns/       informative anti-patterns mapping into the cases that catch them
 crosswalks/     mappings to OWASP, NIST AI RMF, ISO 42001, EU AI Act
-tools/          linter and renderer — format only, never evaluation
+tools/          linter, renderer, report builder, validator, badge
+action.yml      GitHub Action for adopters
 adapters/       junit and promptfoo -> coverage report; translation only
 examples/       fixtures, adopter config, and the report they build
 docs/           identifier, versioning, realization, report, adapter and scope policy
@@ -115,7 +116,7 @@ npm run validate-report -- examples/coverage-report.example.json
 - [x] **Phase 2** — coverage report schema (the artifact an auditor consumes)
 - [x] **Phase 3** — adapters: junit and promptfoo shipped; DeepEval and eval-platform exports to go
 - [x] **Phase 4** — reference implementation: [spark-cost-agent](https://github.com/basantchoudhary/spark-cost-agent/tree/main/aac) emits a real report from its own suite, 23/50 covered
-- [ ] **Phase 5** — ecosystem plugs: OTel attribute convention, CI action, badge
+- [x] **Phase 5** — ecosystem plugs: [OTel attribute convention](docs/OTEL.md), GitHub Action, badge
 
 **Phases 0–2 are the whole specification and are complete.** Phase 3 code is
 all translation — it reads what your test tooling already produced and emits the

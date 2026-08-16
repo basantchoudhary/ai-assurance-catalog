@@ -1,0 +1,80 @@
+name: AI Assurance Catalog coverage
+description: Build and validate a coverage report from test output your CI already produced.
+author: basantchoudhary
+
+branding:
+  icon: check-square
+  color: green
+
+inputs:
+  config:
+    description: Path to aac.config.yaml in your repository.
+    required: true
+  output:
+    description: Where to write the coverage report, relative to the config file.
+    required: false
+    default: coverage-report.json
+  badge:
+    description: Also write a shields.io endpoint JSON alongside the report.
+    required: false
+    default: "false"
+  fail-on-uncovered-must:
+    description: >-
+      Fail the job when a MUST obligation is neither covered nor accepted.
+      Defaults to false: whether a claim is good enough to ship is the release
+      owner's decision, not this action's. Turn it on once your baseline is
+      where you want it, so it ratchets instead of blocking adoption on day one.
+    required: false
+    default: "false"
+
+outputs:
+  covered:
+    description: Number of obligations covered.
+    value: ${{ steps.report.outputs.covered }}
+  applicable:
+    description: Number of obligations applicable to the declared archetypes.
+    value: ${{ steps.report.outputs.applicable }}
+  uncovered-musts:
+    description: MUST obligations neither covered nor accepted.
+    value: ${{ steps.report.outputs.uncovered_musts }}
+
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: install catalog tooling
+      shell: bash
+      working-directory: ${{ github.action_path }}
+      run: npm install --no-fund --no-audit --silent
+
+    - name: build and validate report
+      id: report
+      shell: bash
+      run: |
+        set -euo pipefail
+        node "${{ github.action_path }}/tools/build-report.js" \
+          "${{ inputs.config }}" -o "${{ inputs.output }}"
+
+        cfg_dir=$(dirname "${{ inputs.config }}")
+        report="$cfg_dir/${{ inputs.output }}"
+
+        node "${{ github.action_path }}/tools/validate-report.js" "$report"
+
+        if [ "${{ inputs.badge }}" = "true" ]; then
+          node "${{ github.action_path }}/tools/badge.js" "$report" > "$cfg_dir/badge.json"
+        fi
+
+        for k in covered applicable uncovered_musts; do
+          v=$(node -e "process.stdout.write(String(require('$PWD/'+'$report').summary.$k))")
+          echo "$k=$v" >> "$GITHUB_OUTPUT"
+        done
+
+        # Reported either way; only enforced when the adopter asks for it.
+        musts=$(node -e "process.stdout.write(String(require('$PWD/'+'$report').summary.uncovered_musts))")
+        if [ "$musts" -gt 0 ]; then
+          echo "::warning::$musts MUST obligation(s) neither covered nor accepted"
+          if [ "${{ inputs.fail-on-uncovered-must }}" = "true" ]; then exit 1; fi
+        fi
