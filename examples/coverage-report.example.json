@@ -1,6 +1,6 @@
 {
   "report_version": "1.0",
-  "catalog_version": "0.6.0",
+  "catalog_version": "0.7.0",
   "generated_at": "2026-08-16T11:42:08Z",
   "subject": {
     "name": "invoice-classifier",
@@ -9,7 +9,7 @@
       "A1",
       "A2"
     ],
-    "description": "Illustrative only. Batch document classifier that emits a typed record per invoice. Not a real system — the Phase 4 reference implementation replaces this.",
+    "description": "Illustrative only. Batch document classifier that emits a typed record per invoice. Not a real system — the Phase 4 reference implementation replaces this with a report from a live repository's CI.",
     "repository": "https://github.com/example/invoice-classifier"
   },
   "results": [
@@ -18,7 +18,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -26,8 +26,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0001",
-          "url": "https://evals.example.internal/e/AAC-0001"
+          "ref": "golden set — 240 labelled invoices across 6 vendors",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -44,7 +44,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_output_conforms_to_its_declared_contract.py::test_output_conforms_to_its_declared_contract"
+          "ref": "tests.contract::test_response_matches_declared_schema"
         }
       ]
     },
@@ -61,8 +61,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0003",
-          "url": "https://evals.example.internal/e/AAC-0003"
+          "ref": "declared constraints: output language, no commentary, refuse non-invoices",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -71,15 +71,16 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M7"
+        "M3"
       ],
       "stages": [
         "S3"
       ],
       "evidence": [
         {
-          "type": "test",
-          "ref": "tests/aac/test_resistance_to_injection_from_untrusted_conte.py::test_resistance_to_injection_from_untrusted_conte"
+          "type": "experiment",
+          "ref": "instruction-override attempts embedded in document text",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -87,7 +88,7 @@
       "case": "AAC-0005",
       "status": "accepted-risk",
       "owner": "platform-security",
-      "rationale": "Adversarial safety corpus is maintained centrally and not yet wired into this pipeline.",
+      "rationale": "The adversarial safety corpus is maintained centrally and is not yet wired into this pipeline. Inputs are internal invoice documents, so exposure is limited until the classifier accepts external submissions.",
       "review_by": "2026-11-30"
     },
     {
@@ -98,50 +99,23 @@
         "M1"
       ],
       "stages": [
+        "S2",
         "S4"
       ],
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_no_leakage_of_pii_secrets_or_credentials.py::test_no_leakage_of_pii_secrets_or_credentials"
+          "ref": "tests.gateway::test_output_scan_blocks_personal_data"
         }
       ]
     },
     {
       "case": "AAC-0007",
-      "status": "covered",
-      "outcome": "pass",
-      "mechanisms": [
-        "M2"
-      ],
-      "stages": [
-        "S3"
-      ],
-      "evidence": [
-        {
-          "type": "experiment",
-          "ref": "exp/aac-0007",
-          "url": "https://evals.example.internal/e/AAC-0007"
-        }
-      ]
+      "status": "not-covered"
     },
     {
       "case": "AAC-0008",
-      "status": "covered",
-      "outcome": "pass",
-      "mechanisms": [
-        "M2"
-      ],
-      "stages": [
-        "S3"
-      ],
-      "evidence": [
-        {
-          "type": "experiment",
-          "ref": "exp/aac-0008",
-          "url": "https://evals.example.internal/e/AAC-0008"
-        }
-      ]
+      "status": "not-covered"
     },
     {
       "case": "AAC-0009",
@@ -156,7 +130,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_graceful_degradation_on_provider_failure.py::test_graceful_degradation_on_provider_failure"
+          "ref": "tests.resilience::test_rate_limit_and_timeout_fall_back"
         }
       ]
     },
@@ -176,9 +150,8 @@
       ],
       "evidence": [
         {
-          "type": "trace-query",
-          "ref": "saved:aac-0011",
-          "url": "https://traces.example.internal/q/AAC-0011"
+          "type": "test",
+          "ref": "tests.telemetry::test_span_carries_required_attributes"
         }
       ]
     },
@@ -187,7 +160,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M1"
+        "M5"
       ],
       "stages": [
         "S2"
@@ -195,7 +168,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_model_and_prompt_versions_are_pinned_and_rol.py::test_model_and_prompt_versions_are_pinned_and_rol"
+          "ref": "tests.telemetry::test_model_and_prompt_version_recorded"
         }
       ]
     },
@@ -204,7 +177,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M4"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -212,8 +185,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0013",
-          "url": "https://evals.example.internal/e/AAC-0013"
+          "ref": "candidate vs incumbent on the frozen set, per-case win/loss/tie",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -234,7 +207,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_defined_behaviour_on_degenerate_input.py::test_defined_behaviour_on_degenerate_input"
+          "ref": "tests.resilience::test_empty_and_garbage_input"
         }
       ]
     },
@@ -242,7 +215,7 @@
       "case": "AAC-0016",
       "status": "accepted-risk",
       "owner": "ml-platform",
-      "rationale": "Scheduled drift re-runs await the shared eval scheduler landing in Q4.",
+      "rationale": "Scheduled drift re-runs await the shared eval scheduler landing in Q4. The pinned model version limits provider-side drift in the interim.",
       "review_by": "2026-12-15"
     },
     {
@@ -250,7 +223,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -258,8 +231,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0017",
-          "url": "https://evals.example.internal/e/AAC-0017"
+          "ref": "accuracy by vendor, document length band and source channel",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -268,7 +241,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -276,8 +249,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0018",
-          "url": "https://evals.example.internal/e/AAC-0018"
+          "ref": "semantically equivalent rewrites and reordered line items",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -294,7 +267,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_context_window_overflow_behaviour.py::test_context_window_overflow_behaviour"
+          "ref": "tests.resilience::test_oversized_document_is_chunked_not_truncated"
         }
       ]
     },
@@ -303,7 +276,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -311,8 +284,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0020",
-          "url": "https://evals.example.internal/e/AAC-0020"
+          "ref": "legitimate invoices resembling policy violations are not refused",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -333,52 +306,51 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_total_schema_validity_including_nested_and_o.py::test_total_schema_validity_including_nested_and_o"
+          "ref": "tests.contract::test_every_field_validates"
         }
       ]
     },
     {
       "case": "AAC-0023",
       "status": "covered",
+      "outcome": "fail",
+      "mechanisms": [
+        "M1"
+      ],
+      "stages": [
+        "S2"
+      ],
+      "evidence": [
+        {
+          "type": "test",
+          "ref": "tests.contract::test_dates_and_currency_normalise"
+        }
+      ],
+      "note": "3 of 40 gold records normalised to the wrong locale: 04/07/2026 parsed as 7 April, expected 4 July"
+    },
+    {
+      "case": "AAC-0024",
+      "status": "covered",
       "outcome": "pass",
       "mechanisms": [
         "M1"
       ],
       "stages": [
-        "S3"
+        "S2"
       ],
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_type_unit_and_format_fidelity.py::test_type_unit_and_format_fidelity"
+          "ref": "tests.contract::test_missing_fields_are_null_not_invented"
         }
       ]
-    },
-    {
-      "case": "AAC-0024",
-      "status": "covered",
-      "outcome": "fail",
-      "mechanisms": [
-        "M2"
-      ],
-      "stages": [
-        "S3"
-      ],
-      "evidence": [
-        {
-          "type": "experiment",
-          "ref": "exp/aac-0024",
-          "url": "https://evals.example.internal/e/AAC-0024"
-        }
-      ],
-      "note": "Date fields normalise to the wrong locale for 3 of 40 gold records."
     },
     {
       "case": "AAC-0025",
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -386,8 +358,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0025",
-          "url": "https://evals.example.internal/e/AAC-0025"
+          "ref": "precision and recall reported per field, not per record",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -404,7 +376,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_schema_evolution_does_not_break_consumers.py::test_schema_evolution_does_not_break_consumers"
+          "ref": "tests.contract::test_added_optional_field_keeps_consumer_working"
         }
       ]
     },
@@ -421,7 +393,7 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_the_downstream_consumer_is_tested_on_real_ou.py::test_the_downstream_consumer_is_tested_on_real_ou"
+          "ref": "tests.contract::test_downstream_ingest_on_recorded_responses"
         }
       ]
     },
@@ -433,19 +405,20 @@
         "M1"
       ],
       "stages": [
-        "S2"
+        "S2",
+        "S4"
       ],
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_guardrail_enforcement_fails_closed.py::test_guardrail_enforcement_fails_closed"
+          "ref": "tests.gateway::test_guardrail_outage_fails_closed"
         }
       ]
     },
     {
       "case": "AAC-0092",
       "status": "not-applicable",
-      "rationale": "Responses are not streamed; classification returns a single structured object."
+      "rationale": "Responses are not streamed; classification returns a single structured object per document."
     },
     {
       "case": "AAC-0093",
@@ -455,12 +428,13 @@
         "M1"
       ],
       "stages": [
-        "S2"
+        "S2",
+        "S4"
       ],
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_per_caller_quota_and_spend_ceilings_are_enfo.py::test_per_caller_quota_and_spend_ceilings_are_enfo"
+          "ref": "tests.gateway::test_tenant_quota_rejects_over_ceiling"
         }
       ]
     },
@@ -472,12 +446,13 @@
         "M1"
       ],
       "stages": [
-        "S2"
+        "S2",
+        "S4"
       ],
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_only_approved_models_are_reachable.py::test_only_approved_models_are_reachable"
+          "ref": "tests.gateway::test_unapproved_model_call_is_refused"
         }
       ]
     },
@@ -489,19 +464,20 @@
         "M1"
       ],
       "stages": [
-        "S2"
+        "S2",
+        "S4"
       ],
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_logged_prompts_and_responses_are_redacted_an.py::test_logged_prompts_and_responses_are_redacted_an"
+          "ref": "tests.gateway::test_pii_redacted_before_persistence"
         }
       ]
     },
     {
       "case": "AAC-0096",
       "status": "not-applicable",
-      "rationale": "No response cache is used; every request is scored fresh."
+      "rationale": "No response cache is used; every document is scored fresh."
     },
     {
       "case": "AAC-0097",
@@ -513,7 +489,7 @@
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -521,8 +497,8 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0098",
-          "url": "https://evals.example.internal/e/AAC-0098"
+          "ref": "golden set run against the cheap fallback route as well as the primary",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ]
     },
@@ -539,43 +515,28 @@
       "evidence": [
         {
           "type": "test",
-          "ref": "tests/aac/test_the_output_contract_holds_on_every_route.py::test_the_output_contract_holds_on_every_route"
+          "ref": "tests.routing::test_aac_0099_schema_holds_on_fallback_model"
         }
       ]
     },
     {
       "case": "AAC-0100",
-      "status": "covered",
-      "outcome": "pass",
-      "mechanisms": [
-        "M5"
-      ],
-      "stages": [
-        "S2"
-      ],
-      "evidence": [
-        {
-          "type": "trace-query",
-          "ref": "saved:aac-0100",
-          "url": "https://traces.example.internal/q/AAC-0100"
-        }
-      ]
+      "status": "not-covered"
     },
     {
       "case": "AAC-0101",
       "status": "covered",
       "outcome": "pass",
       "mechanisms": [
-        "M2"
+        "M1"
       ],
       "stages": [
         "S2"
       ],
       "evidence": [
         {
-          "type": "experiment",
-          "ref": "exp/aac-0101",
-          "url": "https://evals.example.internal/e/AAC-0101"
+          "type": "test",
+          "ref": "tests.routing::test_aac_0101_routing_config_change_triggers_suite"
         }
       ]
     },
@@ -584,7 +545,7 @@
       "status": "covered",
       "outcome": "fail",
       "mechanisms": [
-        "M2"
+        "M3"
       ],
       "stages": [
         "S3"
@@ -592,17 +553,17 @@
       "evidence": [
         {
           "type": "experiment",
-          "ref": "exp/aac-0102",
-          "url": "https://evals.example.internal/e/AAC-0102"
+          "ref": "cost per successful task, candidate vs incumbent",
+          "url": "https://evals.example.internal/runs/a3f19c2"
         }
       ],
-      "note": "Candidate is 18% more expensive per successful task than the incumbent."
+      "note": "Candidate is 18.4% more expensive per successful task than the incumbent (0.0071 vs 0.0060). Quality delta +1.9%. Exceeds the 10% ceiling."
     },
     {
       "case": "AAC-0103",
       "status": "accepted-risk",
       "owner": "ml-platform",
-      "rationale": "Context is fixed-length for this classifier; trending deferred until prompts become dynamic.",
+      "rationale": "Context is fixed-length for this classifier, so accretion is bounded by construction. Trending deferred until prompts become dynamic.",
       "review_by": "2027-02-28"
     },
     {
@@ -613,7 +574,7 @@
       "case": "AAC-0106",
       "status": "accepted-risk",
       "owner": "platform-security",
-      "rationale": "Prompt-extraction red-teaming is scheduled with the security review.",
+      "rationale": "Prompt-extraction red-teaming is scheduled alongside the security review. No credential or access decision currently depends on prompt secrecy, which is the half of the obligation that carries the risk.",
       "review_by": "2026-10-31"
     },
     {
@@ -623,12 +584,12 @@
   ],
   "summary": {
     "applicable": 43,
-    "covered": 31,
-    "not_covered": 5,
+    "covered": 28,
+    "not_covered": 8,
     "accepted_risk": 4,
     "not_applicable": 3,
     "failing": 2,
-    "uncovered_musts": 1,
+    "uncovered_musts": 4,
     "uncovered_gates": 1
   }
 }

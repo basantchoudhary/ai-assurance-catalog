@@ -2,7 +2,7 @@
 
 **Test obligations for AI applications, by architecture archetype.**
 
-Status: **working draft 0.6.0** — identifiers are stable from the first tagged
+Status: **working draft 0.7.0** — identifiers are stable from the first tagged
 release. Nothing here is externally binding.
 
 ---
@@ -92,8 +92,9 @@ schema/         JSON Schema for a case, a pattern, and a coverage report
 patterns/       informative anti-patterns mapping into the cases that catch them
 crosswalks/     mappings to OWASP, NIST AI RMF, ISO 42001, EU AI Act
 tools/          linter and renderer — format only, never evaluation
-examples/       a complete, deliberately imperfect coverage report
-docs/           identifier, versioning, realization, report and scope policy
+adapters/       junit and promptfoo -> coverage report; translation only
+examples/       fixtures, adopter config, and the report they build
+docs/           identifier, versioning, realization, report, adapter and scope policy
 ```
 
 The rendered site is a build artifact. **The YAML is the master**; never edit
@@ -103,6 +104,7 @@ generated output.
 npm install
 npm run lint      # schema + identifier + discipline checks
 npm run render    # YAML -> site
+npm run build-report -- examples/aac.config.yaml -o coverage-report.example.json
 npm run validate-report -- examples/coverage-report.example.json
 ```
 
@@ -111,15 +113,15 @@ npm run validate-report -- examples/coverage-report.example.json
 - [x] **Phase 0** — normative core: catalog, schema, identifier policy, renderer
 - [~] **Phase 1** — crosswalks: OWASP LLM Top 10 done; NIST AI RMF, ISO 42001, EU AI Act to go
 - [x] **Phase 2** — coverage report schema (the artifact an auditor consumes)
-- [ ] **Phase 3** — adapters: junit, promptfoo, DeepEval, eval-platform exports
+- [x] **Phase 3** — adapters: junit and promptfoo shipped; DeepEval and eval-platform exports to go
 - [ ] **Phase 4** — public reference implementation emitting a real report, failures included
 - [ ] **Phase 5** — ecosystem plugs: OTel attribute convention, CI action, badge
 
-**Phases 0–2 are complete, and they are the whole specification.** Phase 3 is
-the first functional code, and all of it is translation — reading other tools'
-output and emitting the report format defined in
-[docs/REPORT.md](docs/REPORT.md). Nothing in this repository will ever evaluate
-anything itself.
+**Phases 0–2 are the whole specification and are complete.** Phase 3 code is
+all translation — it reads what your test tooling already produced and emits the
+report format defined in [docs/REPORT.md](docs/REPORT.md). Nothing in this
+repository will ever evaluate anything itself; see
+[docs/ADAPTERS.md](docs/ADAPTERS.md).
 
 ## Licence
 

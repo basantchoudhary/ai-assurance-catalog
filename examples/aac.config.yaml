@@ -1,0 +1,86 @@
+# Adopter configuration: what is being claimed, from which sources, with which
+# obligations deliberately not implemented.
+#
+# This file lives in the adopting repository. `build-report` reads it, runs the
+# adapters over whatever the test tooling already produced, and emits a coverage
+# report. Anything with no adapter evidence and no declaration below becomes
+# "not-covered" automatically — silence is not a permitted answer.
+#
+#   npm run build-report -- examples/aac.config.yaml -o coverage-report.example.json
+
+subject:
+  name: invoice-classifier
+  version: a3f19c2
+  # The classification decides which obligations apply, so a coverage count
+  # without it means nothing. Most real systems are two or three composed.
+  archetypes: [A1, A2]
+  description: >-
+    Illustrative only. Batch document classifier that emits a typed record per
+    invoice. Not a real system — the Phase 4 reference implementation replaces
+    this with a report from a live repository's CI.
+  repository: https://github.com/example/invoice-classifier
+
+# Pinned so the example is reproducible and CI can diff it. Omit in a real
+# repository and the build stamps the current time.
+generated_at: "2026-08-16T11:42:08Z"
+
+sources:
+  - adapter: junit
+    path: fixtures/junit.xml
+    # Defaults for tests that do not override them. An adapter cannot infer the
+    # mechanism from a test result, so it is declared rather than guessed.
+    mechanisms: [M1]
+    stages: [S2]
+
+  - adapter: promptfoo
+    path: fixtures/promptfoo.json
+    mechanisms: [M3]
+    stages: [S3]
+    url: https://evals.example.internal/runs/a3f19c2
+
+declarations:
+  # Conditional obligations whose stated condition genuinely does not hold.
+  - case: AAC-0092
+    status: not-applicable
+    rationale: >-
+      Responses are not streamed; classification returns a single structured
+      object per document.
+  - case: AAC-0096
+    status: not-applicable
+    rationale: No response cache is used; every document is scored fresh.
+  - case: AAC-0097
+    status: not-applicable
+    rationale: Single-region deployment with no residency commitments in scope.
+
+  # Deliberately not implemented. Owner and review date are required — an
+  # acceptance without an expiry is an omission wearing a process.
+  - case: AAC-0005
+    status: accepted-risk
+    owner: platform-security
+    rationale: >-
+      The adversarial safety corpus is maintained centrally and is not yet wired
+      into this pipeline. Inputs are internal invoice documents, so exposure is
+      limited until the classifier accepts external submissions.
+    review_by: "2026-11-30"
+  - case: AAC-0016
+    status: accepted-risk
+    owner: ml-platform
+    rationale: >-
+      Scheduled drift re-runs await the shared eval scheduler landing in Q4. The
+      pinned model version limits provider-side drift in the interim.
+    review_by: "2026-12-15"
+  - case: AAC-0103
+    status: accepted-risk
+    owner: ml-platform
+    rationale: >-
+      Context is fixed-length for this classifier, so accretion is bounded by
+      construction. Trending deferred until prompts become dynamic.
+    review_by: "2027-02-28"
+  - case: AAC-0106
+    status: accepted-risk
+    owner: platform-security
+    rationale: >-
+      Prompt-extraction red-teaming is scheduled alongside the security review.
+      No credential or access decision currently depends on prompt secrecy,
+      which is the half of the obligation that carries the risk.
+    review_by: "2026-10-31"

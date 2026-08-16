@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Fixture: a pytest run for the illustrative invoice-classifier.
+  Exercises both declaration forms — recorded properties and identifiers
+  embedded in test names — so the adapter is covered on both paths.
+-->
+<testsuites>
+  <testsuite name="pytest" tests="18" failures="1" errors="0" skipped="0" time="41.882">
+
+    <!-- Property form: a rename cannot silently break the link. -->
+    <testcase classname="tests.contract" name="test_response_matches_declared_schema" time="0.412">
+      <properties><property name="aac" value="AAC-0002"/></properties>
+    </testcase>
+    <testcase classname="tests.contract" name="test_every_field_validates" time="0.298">
+      <properties><property name="aac" value="AAC-0022"/></properties>
+    </testcase>
+    <testcase classname="tests.contract" name="test_dates_and_currency_normalise" time="0.331">
+      <properties><property name="aac" value="AAC-0023"/></properties>
+      <failure message="3 of 40 gold records normalised to the wrong locale: 04/07/2026 parsed as 7 April, expected 4 July">assert normalised == expected</failure>
+    </testcase>
+    <testcase classname="tests.contract" name="test_missing_fields_are_null_not_invented" time="0.507">
+      <properties><property name="aac" value="AAC-0024"/></properties>
+    </testcase>
+    <testcase classname="tests.contract" name="test_added_optional_field_keeps_consumer_working" time="0.183">
+      <properties><property name="aac" value="AAC-0026"/></properties>
+    </testcase>
+    <testcase classname="tests.contract" name="test_downstream_ingest_on_recorded_responses" time="1.904">
+      <properties><property name="aac" value="AAC-0027"/></properties>
+    </testcase>
+
+    <!-- Resilience and plumbing: mocked model, so these are cheap and deterministic. -->
+    <testcase classname="tests.resilience" name="test_rate_limit_and_timeout_fall_back" time="2.114">
+      <properties><property name="aac" value="AAC-0009"/></properties>
+    </testcase>
+    <testcase classname="tests.resilience" name="test_oversized_document_is_chunked_not_truncated" time="0.884">
+      <properties><property name="aac" value="AAC-0019"/></properties>
+    </testcase>
+    <testcase classname="tests.resilience" name="test_empty_and_garbage_input" time="0.291">
+      <properties><property name="aac" value="AAC-0015"/></properties>
+    </testcase>
+
+    <!-- Trace assertions: same runner, different mechanism, declared per test. -->
+    <testcase classname="tests.telemetry" name="test_span_carries_required_attributes" time="0.622">
+      <properties>
+        <property name="aac" value="AAC-0011"/>
+        <property name="aac.mechanism" value="M5"/>
+      </properties>
+    </testcase>
+    <testcase classname="tests.telemetry" name="test_model_and_prompt_version_recorded" time="0.244">
+      <properties>
+        <property name="aac" value="AAC-0012"/>
+        <property name="aac.mechanism" value="M5"/>
+      </properties>
+    </testcase>
+
+    <!-- Gateway enforcement: verified in CI, operating at S4. -->
+    <testcase classname="tests.gateway" name="test_guardrail_outage_fails_closed" time="1.331">
+      <properties>
+        <property name="aac" value="AAC-0091"/>
+        <property name="aac.stage" value="S2 S4"/>
+      </properties>
+    </testcase>
+    <testcase classname="tests.gateway" name="test_tenant_quota_rejects_over_ceiling" time="0.706">
+      <properties>
+        <property name="aac" value="AAC-0093"/>
+        <property name="aac.stage" value="S2 S4"/>
+      </properties>
+    </testcase>
+    <testcase classname="tests.gateway" name="test_unapproved_model_call_is_refused" time="0.418">
+      <properties>
+        <property name="aac" value="AAC-0094"/>
+        <property name="aac.stage" value="S2 S4"/>
+      </properties>
+    </testcase>
+    <testcase classname="tests.gateway" name="test_pii_redacted_before_persistence" time="0.955">
+      <properties>
+        <property name="aac" value="AAC-0095"/>
+        <property name="aac.stage" value="S2 S4"/>
+      </properties>
+    </testcase>
+    <testcase classname="tests.gateway" name="test_output_scan_blocks_personal_data" time="0.612">
+      <properties>
+        <property name="aac" value="AAC-0006"/>
+        <property name="aac.stage" value="S2 S4"/>
+      </properties>
+    </testcase>
+
+    <!-- Name-embedded form: no properties, identifier read from the test name. -->
+    <testcase classname="tests.routing" name="test_aac_0099_schema_holds_on_fallback_model" time="3.220"/>
+    <testcase classname="tests.routing" name="test_aac_0101_routing_config_change_triggers_suite" time="0.377"/>
+
+  </testsuite>
+</testsuites>

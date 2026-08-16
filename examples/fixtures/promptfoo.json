@@ -1,0 +1,98 @@
+{
+  "_comment": "Fixture: a promptfoo run for the illustrative invoice-classifier. Obligations are declared on test metadata, with two rows falling back to an assertion metric name to exercise that path.",
+  "version": 3,
+  "results": {
+    "results": [
+      {
+        "id": "r-001",
+        "success": true,
+        "testCase": {
+          "description": "golden set — 240 labelled invoices across 6 vendors",
+          "metadata": { "aac": "AAC-0001" }
+        }
+      },
+      {
+        "id": "r-002",
+        "success": true,
+        "testCase": {
+          "description": "declared constraints: output language, no commentary, refuse non-invoices",
+          "metadata": { "aac": "AAC-0003" }
+        }
+      },
+      {
+        "id": "r-003",
+        "success": true,
+        "testCase": {
+          "description": "instruction-override attempts embedded in document text",
+          "metadata": { "aac": "AAC-0004" }
+        }
+      },
+      {
+        "id": "r-004",
+        "success": true,
+        "testCase": {
+          "description": "candidate vs incumbent on the frozen set, per-case win/loss/tie",
+          "metadata": { "aac": "AAC-0013" }
+        }
+      },
+      {
+        "id": "r-005",
+        "success": true,
+        "testCase": {
+          "description": "accuracy by vendor, document length band and source channel",
+          "metadata": { "aac": "AAC-0017" }
+        }
+      },
+      {
+        "id": "r-006",
+        "success": true,
+        "testCase": {
+          "description": "semantically equivalent rewrites and reordered line items",
+          "metadata": { "aac": "AAC-0018" }
+        }
+      },
+      {
+        "id": "r-007",
+        "success": true,
+        "testCase": {
+          "description": "legitimate invoices resembling policy violations are not refused",
+          "metadata": { "aac": "AAC-0020" }
+        }
+      },
+      {
+        "id": "r-008",
+        "success": true,
+        "testCase": {
+          "description": "precision and recall reported per field, not per record"
+        },
+        "gradingResult": {
+          "pass": true,
+          "componentResults": [{ "assertion": { "metric": "AAC-0025-field-level-prf" }, "pass": true }]
+        }
+      },
+      {
+        "id": "r-009",
+        "success": true,
+        "testCase": {
+          "description": "golden set run against the cheap fallback route as well as the primary"
+        },
+        "gradingResult": {
+          "pass": true,
+          "componentResults": [{ "assertion": { "metric": "AAC-0098-fallback-parity" }, "pass": true }]
+        }
+      },
+      {
+        "id": "r-010",
+        "success": false,
+        "testCase": {
+          "description": "cost per successful task, candidate vs incumbent",
+          "metadata": { "aac": "AAC-0102" }
+        },
+        "gradingResult": {
+          "pass": false,
+          "reason": "Candidate is 18.4% more expensive per successful task than the incumbent (0.0071 vs 0.0060). Quality delta +1.9%. Exceeds the 10% ceiling."
+        }
+      }
+    ]
+  }
+}

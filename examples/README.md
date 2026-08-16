@@ -1,26 +1,37 @@
 # Examples
 
-## `coverage-report.example.json`
+```
+fixtures/junit.xml       a pytest run
+fixtures/promptfoo.json  a promptfoo run
+aac.config.yaml          what is claimed, from where, and what is accepted
+coverage-report.example.json   <- built from the three above
+```
 
-A complete coverage report for an illustrative system — **not a real one**. The
-Phase 4 reference implementation replaces this with a report emitted from a
-real repository's CI.
+## The report is a build artifact, not a document
 
-Subject: a batch document classifier that emits a typed record per invoice,
-classified as `A1` + `A2`. That composition makes 43 obligations applicable.
+`coverage-report.example.json` is produced by the real adapters from the real
+fixtures. Nothing about it is hand-written, and CI rebuilds it on every push and
+fails on any diff — so the whole chain (fixture → adapter → merge → schema)
+stays provably intact rather than drifting into documentation.
 
 ```bash
+npm run build-example
 npm run validate-report -- examples/coverage-report.example.json
 ```
 
+Subject: an illustrative batch document classifier that emits a typed record per
+invoice, classified `A1` + `A2`. That composition makes 43 obligations
+applicable. It is **not a real system** — the Phase 4 reference implementation
+replaces it with a report from a live repository's CI.
+
 ```
-invoice-classifier a3f19c2  [A1 A2]  catalog 0.5.0
+invoice-classifier a3f19c2  [A1 A2]  catalog 0.7.0
   applicable      43
-  covered         31  (2 failing)
+  covered         28  (2 failing)
   accepted risk   4
   not applicable  3
-  not covered     5
-  uncovered MUSTs 1
+  not covered     8
+  uncovered MUSTs 4
   uncovered gates 1
 ```
 
@@ -29,22 +40,28 @@ invoice-classifier a3f19c2  [A1 A2]  catalog 0.5.0
 An all-green example would teach the wrong lesson. This one carries every state
 the format supports, because each one means something different to a reader:
 
-- **2 failing** — `AAC-0024` (dates normalising to the wrong locale for 3 of 40
-  gold records) and `AAC-0102` (candidate 18% more expensive per successful
-  task). Both are *working controls reporting real problems*, which is a
-  materially better position than not checking. See
+- **2 failing** — `AAC-0023` (dates normalising to the wrong locale for 3 of 40
+  gold records) and `AAC-0102` (candidate 18.4% more expensive per successful
+  task, for +1.9% quality). Both are *working controls reporting real problems*,
+  which is a materially better position than not checking. See
   [../docs/REPORT.md](../docs/REPORT.md).
 - **4 accepted risks** — each with an owner and a review date. Under a
   management-system audit an identified, owned, dated gap is conformant; an
   undiscovered one is a finding.
 - **3 not applicable** — the conditional `MAY` obligations whose condition
   genuinely fails: no streaming, no cache, single region.
-- **5 not covered** — honest blind spots, including one MUST that is also a
-  release gate. Nobody has got to it and nobody has accepted it.
+- **8 not covered** — honest blind spots, four of them MUSTs and one also a
+  release gate. Nobody has got to them and nobody has accepted them.
 
-That last line is the one worth keeping. The format makes "we have not done
-this" a first-class answer, because the alternative is people quietly omitting
-the row.
+Those eight are not hand-listed anywhere. They appear because `build-report`
+found no adapter evidence and no declaration, and wrote the row anyway. A blind
+spot cannot be hidden by omitting it, which is the only reason the coverage
+number means anything.
+
+The shape is recognisable: a team with solid contract testing and a real eval
+suite that has not yet wired up cost and latency observability. `AAC-0007`,
+`AAC-0008`, `AAC-0100` and `AAC-0107` are exactly what falls through when
+telemetry work trails test work.
 
 ## The summary cannot lie
 
@@ -52,8 +69,8 @@ the row.
 mismatch:
 
 ```
-ERROR summary.covered claims 43, results give 31
-ERROR summary.not_covered claims 0, results give 5
+ERROR summary.covered claims 43, results give 28
+ERROR summary.not_covered claims 0, results give 8
 ```
 
 A report cannot claim a headline its own rows do not support. For an artifact

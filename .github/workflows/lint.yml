@@ -18,8 +18,17 @@ jobs:
       # Schema, identifier permanence, and the no-product-names discipline.
       - run: npm run lint
 
-      # The example report must stay valid against the current catalog — it is
-      # the executable specification of the report format.
+      # The example report is a build artifact of the adapters, not a document.
+      # Rebuilding it from the fixtures proves the whole chain — fixture,
+      # adapter, merge, schema — still works together.
+      - name: example report rebuilds from fixtures
+        run: |
+          npm run build-example
+          if ! git diff --quiet -- examples/coverage-report.example.json; then
+            echo "::error::example report is stale. Run 'npm run build-example' and commit."
+            git diff -- examples/coverage-report.example.json | head -60
+            exit 1
+          fi
       - run: npm run validate-report -- examples/coverage-report.example.json
 
       # The site is a build artifact. If a rebuild produces a diff, someone

@@ -12,15 +12,73 @@ ship. A quarter with no changes ships a release note saying so.
 **Phase 1 — remaining crosswalks:** NIST AI RMF, ISO/IEC 42001, EU AI Act.
 OWASP shipped in 0.5.0.
 
-**Phase 3 — adapters.** First functional code, all of it translation: read
-another tool's output, emit a coverage report. Two independent adapters must
-both produce a valid report before `1.0.0`, per
-[docs/VERSIONING.md](docs/VERSIONING.md), so junit and promptfoo get built
-together rather than sequentially.
+**Phase 4 — reference implementation.** A real repository emitting a real
+report from real CI, failures included. This is the artifact everything else
+exists to produce, and the one that decides whether any of this gets adopted.
 
 **Content work is paused**, as recorded in 0.5.0. The remaining obligations
 (two pattern gaps, thin `latency` coverage) are additive and invalidate nothing.
 They wait until Phase 4 has produced a report with real failures in it.
+
+## [0.7.0] — 2026-08-16
+
+Phase 3. First functional code — and all of it is translation.
+
+### Added — adapters
+
+- `adapters/junit.js` — junit XML from any runner
+- `adapters/promptfoo.js` — promptfoo JSON output
+- `tools/build-report.js` and `npm run build-report`
+- `docs/ADAPTERS.md`
+- `examples/aac.config.yaml`, `examples/fixtures/`
+
+Two adapters, built together rather than sequentially, because
+[docs/VERSIONING.md](docs/VERSIONING.md) requires two independent
+implementations before `1.0.0`. A format proven by one implementation silently
+encodes that implementation's assumptions as normative, and you find out when
+the second arrives.
+
+### The example report is now a build artifact
+
+`examples/coverage-report.example.json` is no longer hand-written. It is
+produced by the real adapters from real fixtures, and CI rebuilds it on every
+push and fails on any diff — so fixture, adapter, merge and schema stay provably
+connected instead of drifting into documentation.
+
+Rebuilding it against the actual pipeline moved the numbers, which is the point:
+28/43 covered rather than 31, and 8 not-covered rather than 5. **Those eight are
+not listed anywhere.** They appear because `build-report` found no adapter
+evidence and no declaration and wrote the row anyway. A blind spot cannot be
+hidden by omitting it, which is the only reason a coverage number means
+anything.
+
+The resulting shape is recognisable: solid contract testing, a real eval suite,
+and cost and latency observability not yet wired up — `AAC-0007`, `AAC-0008`,
+`AAC-0100`, `AAC-0107`.
+
+### Merge rules
+
+- **Worst outcome wins.** One failing check makes the obligation failing; four
+  tests with one failure is not 75% passing.
+- **Declarations override adapters** for `accepted-risk` and `not-applicable`.
+  A deliberate decision outranks an incidental test result.
+- **Everything else becomes `not-covered`**, explicitly.
+
+A missing source file and a declaration for an obligation the subject does not
+owe are both reported rather than passed over — the second almost always means
+the archetype classification is wrong.
+
+### Design note
+
+Adapters read output that already exists. They run nothing and score nothing,
+which is the strategy rather than modesty: an adapter makes the tool it reads
+more valuable and makes this project visibly dependent on it, turning a
+potential rival into a beneficiary. Shipping our own scorer would acquire six
+competitors overnight.
+
+Mechanism is declared, never inferred — a passing test could be a schema
+assertion or a trace assertion and only the author knows, so `aac.config.yaml`
+carries per-source defaults and tests override per case.
 
 ## [0.6.0] — 2026-08-16
 
@@ -288,7 +346,8 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...HEAD
+[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...HEAD
+[0.7.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...v0.4.0
