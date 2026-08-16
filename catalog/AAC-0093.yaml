@@ -1,0 +1,44 @@
+# AAC-0093 — Per-caller quota and spend ceilings are enforced
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0093
+status: active
+since: "0.2.0"
+
+level: SHOULD
+dimension: cost
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Per-caller quota and spend ceilings are enforced
+
+statement: |-
+  Request, token and currency ceilings are enforced per user, tenant and credential, outside the application's own logic. Applies wherever callers are not fully trusted. Without it a single caller can exhaust the budget for everyone while cost per successful task stays healthy, because that metric averages away the caller who is the problem.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M7
+stages:
+  - S2
+  - S4
+tool_class: |-
+  Gateway
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

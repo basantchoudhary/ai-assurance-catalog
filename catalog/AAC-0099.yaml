@@ -1,0 +1,44 @@
+# AAC-0099 — The output contract holds on every route
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0099
+status: active
+since: "0.2.0"
+
+level: MUST
+dimension: format
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  The output contract holds on every route
+
+statement: |-
+  Schema conformance, instruction adherence, persona and refusal scope are verified per reachable model rather than once against the primary. Structured-output reliability and instruction-following vary sharply between models, so a contract that holds on one route can fail on another while every aggregate quality metric stays flat.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M3
+stages:
+  - S2
+  - S3
+tool_class: |-
+  Test runner + eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

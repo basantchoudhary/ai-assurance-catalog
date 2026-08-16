@@ -1,0 +1,43 @@
+# AAC-0095 — Logged prompts and responses are redacted and retention-bounded
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0095
+status: active
+since: "0.2.0"
+
+level: MUST
+dimension: privacy
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Logged prompts and responses are redacted and retention-bounded
+
+statement: |-
+  Personal data is removed from prompts and completions before persistence, retention is bounded, and the redaction is itself tested against payloads known to contain it. This obligation stands in direct tension with the trace-completeness obligation, and both hold: the resolution is redaction at write time plus bounded retention, never a choice between observability and privacy.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+stages:
+  - S2
+  - S4
+tool_class: |-
+  Gateway + tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

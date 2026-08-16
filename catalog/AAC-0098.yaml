@@ -1,0 +1,43 @@
+# AAC-0098 — Every reachable model is evaluated, not just the primary
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0098
+status: active
+since: "0.2.0"
+
+level: MUST
+dimension: correctness
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Every reachable model is evaluated, not just the primary
+
+statement: |-
+  The golden set is run against every model the system can actually serve from, including cheap routes, fallbacks and failover targets. A system with a mandated fallback path already has more than one route, so this applies even where no router was deliberately built. Teams routinely evaluate the primary and ship an unevaluated fallback that first appears under the load of an incident.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M2
+  - M4
+stages:
+  - S3
+tool_class: |-
+  Eval platform
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

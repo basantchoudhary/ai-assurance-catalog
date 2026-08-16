@@ -1,0 +1,43 @@
+# AAC-0100 — The serving route is recorded, with its reason and its cost
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0100
+status: active
+since: "0.2.0"
+
+level: MUST
+dimension: observability
+gate: false
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  The serving route is recorded, with its reason and its cost
+
+statement: |-
+  Which model served the request, what caused that selection — routing rule, threshold, cache hit, fallback after failure — and what it cost are all present in the trace. Recording the model alone is insufficient: without the reason, a quality regression cannot be attributed to a route, and a silent substitution during failover is indistinguishable from normal operation.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M5
+stages:
+  - S2
+  - S5
+tool_class: |-
+  Tracing backend
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

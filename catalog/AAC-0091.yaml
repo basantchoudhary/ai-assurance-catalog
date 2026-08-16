@@ -1,0 +1,44 @@
+# AAC-0091 — Guardrail enforcement fails closed
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0091
+status: active
+since: "0.2.0"
+
+level: MUST
+dimension: safety
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Guardrail enforcement fails closed
+
+statement: |-
+  When a guardrail, classifier or content filter is unavailable, times out or errors, the request fails closed or degrades to a defined safe path. Tested by taking the guardrail down under load. Fail-open is the default in most deployments and it is how a safety control silently stops existing — the dashboard still shows it configured while nothing is being checked.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M7
+stages:
+  - S2
+  - S4
+tool_class: |-
+  Guardrail engine + gateway
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.

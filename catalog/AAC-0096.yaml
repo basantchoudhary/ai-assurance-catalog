@@ -1,0 +1,44 @@
+# AAC-0096 — Cached responses never cross a trust boundary
+# Normative. Edit here; the rendered site is generated from this file.
+id: AAC-0096
+status: active
+since: "0.2.0"
+
+level: MAY
+dimension: privacy
+gate: true
+
+# Applies to these archetypes. CORE cases list every archetype explicitly
+# rather than relying on an inheritance keyword, so a consumer never has to
+# resolve the taxonomy to know whether a case applies.
+archetypes:
+  - A1
+  - A2
+  - A3
+  - A4
+  - A5
+  - A6
+  - A7
+  - A8
+  - A9
+  - A10
+core: true
+
+title: |-
+  Cached responses never cross a trust boundary
+
+statement: |-
+  Where exact or semantic response caching is used, the cache key includes every identity, tenant and permission dimension that could change the correct answer. Tested adversarially by priming the cache as one principal and requesting as another. Semantic caching makes this sharper than it looks, because near-miss matching can serve one caller's answer to a different question.
+
+# Realization is advisory: it names the class of machinery that can discharge
+# the obligation, never a product. See docs/REALIZATION.md.
+mechanisms:
+  - M1
+  - M7
+stages:
+  - S2
+  - S4
+tool_class: |-
+  Gateway
+
+# Crosswalks to external frameworks live in /crosswalks, keyed by this id.
