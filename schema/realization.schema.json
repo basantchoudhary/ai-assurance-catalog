@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/realization.schema.json",
+  "$id": "https://github.com/dataagentsai/ai-assurance-catalog/schema/realization.schema.json",
   "title": "AAC Realization file",
   "description": "How obligations get built, concretely. INFORMATIVE and the only layer where products may be named. Versioned separately from catalog/ because products change far faster than obligations do. Nothing here is a recommendation.",
   "type": "object",

@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/pattern.schema.json",
+  "$id": "https://github.com/dataagentsai/ai-assurance-catalog/schema/pattern.schema.json",
   "title": "AACP Pattern file",
   "description": "A file of known anti-patterns. INFORMATIVE — patterns are diagnoses, not obligations, and nothing here is required for conformance. A pattern's job is to answer 'why does this obligation exist?' so the obligation itself can stay short, and to act as coverage validation: a pattern that no case catches is a hole in the catalog.",
   "type": "object",

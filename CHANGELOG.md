@@ -608,19 +608,19 @@ First public draft. Identifiers are provisional until `1.0.0`; see
   verified pre-merge and which then *operate* in production, so S2 was added.
   Found by the linter rule rejecting gates that cannot fail anywhere.
 
-[Unreleased]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.4...HEAD
-[0.11.4]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.3...v0.11.4
-[0.11.3]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.2...v0.11.3
-[0.11.2]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.1...v0.11.2
-[0.11.1]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.11.0...v0.11.1
-[0.11.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.10.0...v0.11.0
-[0.10.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.9.0...v0.10.0
-[0.9.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.8.0...v0.9.0
-[0.8.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.7.0...v0.8.0
-[0.7.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.6.0...v0.7.0
-[0.6.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.5.0...v0.6.0
-[0.5.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.4.0...v0.5.0
-[0.4.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/basantchoudhary/ai-assurance-catalog/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/basantchoudhary/ai-assurance-catalog/releases/tag/v0.1.0
+[Unreleased]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.11.4...HEAD
+[0.11.4]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.11.3...v0.11.4
+[0.11.3]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.11.2...v0.11.3
+[0.11.2]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.11.1...v0.11.2
+[0.11.1]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.11.0...v0.11.1
+[0.11.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.10.0...v0.11.0
+[0.10.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.9.0...v0.10.0
+[0.9.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.8.0...v0.9.0
+[0.8.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.7.0...v0.8.0
+[0.7.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.6.0...v0.7.0
+[0.6.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.5.0...v0.6.0
+[0.5.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.4.0...v0.5.0
+[0.4.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/dataagentsai/ai-assurance-catalog/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/dataagentsai/ai-assurance-catalog/releases/tag/v0.1.0

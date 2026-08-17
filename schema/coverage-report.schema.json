@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/coverage-report.schema.json",
+  "$id": "https://github.com/dataagentsai/ai-assurance-catalog/schema/coverage-report.schema.json",
   "title": "AAC Coverage Report",
   "description": "A machine-readable conformance claim: which obligations a system covers, how, and with what evidence. Emitted by CI as a byproduct of testing — never hand-assembled — and consumed by release reviews, GRC platforms and auditors. See docs/REPORT.md for the semantics of a claim.",
   "type": "object",

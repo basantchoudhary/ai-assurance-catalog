@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://github.com/basantchoudhary/ai-assurance-catalog/schema/case.schema.json",
+  "$id": "https://github.com/dataagentsai/ai-assurance-catalog/schema/case.schema.json",
   "title": "AAC Case",
   "description": "One test obligation. The normative unit of the AI Assurance Catalog. A case states WHAT must be true, tags WHICH archetypes owe it, and names the CLASS of machinery that can discharge it. A case never names a product, never defines a metric formula, and never sets a threshold.",
   "type": "object",
